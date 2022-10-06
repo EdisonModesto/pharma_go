@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pharma_go/authentication/loginUI.dart';
+import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
+import 'package:pharma_go/speechRecognition/speechFAB.dart';
+import 'package:provider/provider.dart';
 
 class homeUI extends StatefulWidget {
   const homeUI({Key? key}) : super(key: key);
@@ -12,19 +15,9 @@ class homeUI extends StatefulWidget {
 
 class _homeUIState extends State<homeUI> {
 
-  void checkAuth(){
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>const loginUI()));
-      } else {
-        print('User is signed in!');
-      }
-    });
-  }
 
   @override
   void initState() {
-    checkAuth();
     super.initState();
   }
 
@@ -42,11 +35,12 @@ class _homeUIState extends State<homeUI> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 170,
+                      width: 250,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          Container(
+                            margin: const EdgeInsets.only(right: 15),
                             width: 40,
                             child: Hero(
                               tag: "logo",
@@ -54,9 +48,9 @@ class _homeUIState extends State<homeUI> {
 
                             ),
                           ),
-                          const Text(
-                            "Welcome User",
-                            style: TextStyle(
+                          Text(
+                            "Welcome ${context.watch<registerProvider>().Name.split(" ")[0]}",
+                            style: const TextStyle(
                               fontSize: 16
                             ),
                           )
@@ -162,7 +156,7 @@ class _homeUIState extends State<homeUI> {
                                 Container(
                                   width: 80,
                                   height: 80,
-                                  margin: EdgeInsets.only(right: 20),
+                                  margin: const EdgeInsets.only(right: 20),
                                   decoration: const BoxDecoration(
                                     borderRadius: BorderRadius.all(Radius.circular(12)),
                                     color: Color(0xff219C9C),
@@ -197,14 +191,7 @@ class _homeUIState extends State<homeUI> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {  },
-        backgroundColor: const Color(0xff219C9C),
-        child: const Icon(
-          MyFlutterApp.mic,
-          size: 20,
-        ),
-      ),
+      floatingActionButton: const speechFAB()
     );
   }
 }

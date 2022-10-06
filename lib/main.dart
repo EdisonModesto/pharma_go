@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pharma_go/Home/homeUI.dart';
@@ -5,6 +7,7 @@ import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/navigaton%20bar/navigation.dart';
 import 'package:provider/provider.dart';
 
+import 'authentication/loginUI.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -52,16 +55,38 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
+
   void endSplash()async{
     await Future.delayed(Duration(seconds: 3));
-    Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (context)=> navigationBar()));
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>const loginUI()));
+      } else {
+        getUserInfo();
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> navigationBar()));
+      }
+    });
   }
 
+  getUserInfo() async {
+    if(FirebaseAuth.instance.currentUser != null) {
+      var collection = FirebaseFirestore.instance.collection('Users').doc(
+          FirebaseAuth.instance.currentUser?.uid);
+      var docSnapshot = await collection.get();
+      Map<String, dynamic>? data = docSnapshot.data();
+
+      print(data);
+      context.read<registerProvider>().addDetails(
+          data!["Mobile"], data["Name"], data["Address"], data["Age"],
+          data["Weight"], data["Height"]);
+    }
+  }
 
 
   @override
   void initState() {
+    getUserInfo();
     endSplash();
     super.initState();
   }
@@ -71,8 +96,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Image.asset(
-            "assets/images/PharmaGo.png"
+          child: Hero(
+            tag: "logo",
+            child: Image.asset(
+              "assets/images/PharmaGo.png"
+            ),
           ),
         ),
       )

@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:osm_nominatim/osm_nominatim.dart';
+import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
+import 'package:latlong2/latlong.dart' as latLng;
+import 'package:pharma_go/speechRecognition/speechFAB.dart';
+import 'package:provider/provider.dart';
 
 class mapUI extends StatefulWidget {
   const mapUI({Key? key}) : super(key: key);
@@ -9,6 +16,43 @@ class mapUI extends StatefulWidget {
 }
 
 class _mapUIState extends State<mapUI> {
+  List<Marker> markers = [];
+
+  getPharmacies()async{
+
+    final searchResult = await Nominatim.searchByName(
+      query: 'pharmacy san fernando pampanga',
+      limit: 50,
+      addressDetails: true,
+      extraTags: true,
+      nameDetails: true,
+    );
+
+      print("getting places");
+      searchResult.forEach((element) {
+
+        if(mounted){
+          setState(() {
+            markers.add(
+                Marker(
+                  point: latLng.LatLng(element.lat, element.lon),
+                  width: 300,
+                  height: 300,
+                  builder: (context) => const Icon(MyFlutterApp.location, color: Color(0xff219C9C),),
+                )
+            );
+          });
+          print("MOUNTED");
+        }
+      });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPharmacies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,11 +67,12 @@ class _mapUIState extends State<mapUI> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 170,
+                      width: 250,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          Container(
+                            margin: EdgeInsets.only(right: 15),
                             width: 40,
                             child: Hero(
                               tag: "logo",
@@ -35,8 +80,8 @@ class _mapUIState extends State<mapUI> {
 
                             ),
                           ),
-                          const Text(
-                            "Welcome User",
+                          Text(
+                            "Welcome ${context.watch<registerProvider>().Name.split(" ")[0]}",
                             style: TextStyle(
                                 fontSize: 16
                             ),
@@ -82,6 +127,42 @@ class _mapUIState extends State<mapUI> {
                                   border: Border.all(color: Colors.black, width: 6,
                                   )
                               ),
+                              child: FlutterMap(
+                                options: MapOptions(
+                                  center: latLng.LatLng(15.0284, 120.6937),
+                                  zoom: 11,
+                                ),
+                                nonRotatedChildren: [
+
+                                ],
+                                children: [
+                                  TileLayer(
+                                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    userAgentPackageName: 'com.example.app',
+                                  ),
+
+                                  markers.isNotEmpty ? MarkerClusterLayerWidget(
+                                    options: MarkerClusterLayerOptions(
+                                      maxClusterRadius: 0,
+                                      size: const Size(40, 40),
+                                      fitBoundsOptions: const FitBoundsOptions(
+                                        padding: EdgeInsets.all(50),
+                                      ),
+                                      markers: markers,
+                                      polygonOptions: const PolygonOptions(
+                                          borderColor: Colors.blueAccent,
+                                          color: Colors.black12,
+                                          borderStrokeWidth: 3),
+                                      builder: (context, markers) {
+                                        return FloatingActionButton(
+                                          onPressed: null,
+                                          child: Text(markers.length.toString()),
+                                        );
+                                      },
+                                    ),
+                                  ) : Container()
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -93,14 +174,7 @@ class _mapUIState extends State<mapUI> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {  },
-        backgroundColor: const Color(0xff219C9C),
-        child: const Icon(
-          MyFlutterApp.mic,
-          size: 20,
-        ),
-      ),
+      floatingActionButton: const speechFAB()
     );
   }
 }

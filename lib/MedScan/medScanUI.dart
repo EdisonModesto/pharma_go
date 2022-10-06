@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
+import 'package:pharma_go/speechRecognition/speechFAB.dart';
+import 'package:provider/provider.dart';
 
 class medScanUI extends StatefulWidget {
   const medScanUI({Key? key}) : super(key: key);
@@ -23,11 +26,12 @@ class _medScanUIState extends State<medScanUI> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 170,
+                      width: 250,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          Container(
+                            margin: EdgeInsets.only(right: 15),
                             width: 40,
                             child: Hero(
                               tag: "logo",
@@ -35,8 +39,8 @@ class _medScanUIState extends State<medScanUI> {
 
                             ),
                           ),
-                          const Text(
-                            "Welcome User",
+                          Text(
+                            "Welcome ${context.watch<registerProvider>().Name.split(" ")[0]}",
                             style: TextStyle(
                                 fontSize: 16
                             ),
@@ -110,14 +114,7 @@ class _medScanUIState extends State<medScanUI> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {  },
-        backgroundColor: const Color(0xff219C9C),
-        child: const Icon(
-          MyFlutterApp.mic,
-          size: 20,
-        ),
-      ),
+      floatingActionButton: const speechFAB()
     );
   }
 }

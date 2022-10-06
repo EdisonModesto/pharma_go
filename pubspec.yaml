@@ -41,6 +41,12 @@ dependencies:
   fluttertoast: ^8.0.9
   provider: ^6.0.3
   persistent_bottom_nav_bar: ^5.0.2
+  flutter_map: ^3.0.0
+  osm_nominatim: ^2.0.1
+  flutter_map_marker_cluster: ^1.0.0
+  cloud_firestore: ^3.5.0
+  firebase_storage: ^10.3.10
+  modal_bottom_sheet: ^2.1.2
 
 
 

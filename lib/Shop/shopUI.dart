@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pharma_go/Shop/cartList.dart';
+import 'package:provider/provider.dart';
 
+import '../authentication/registerProvider.dart';
 import '../my_flutter_app_icons.dart';
+import '../speechRecognition/speechFAB.dart';
 
 class shopUI extends StatefulWidget {
   const shopUI({Key? key}) : super(key: key);
@@ -24,11 +29,12 @@ class _shopUIState extends State<shopUI> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 170,
+                      width: 250,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          SizedBox(
+                          Container(
+                            margin: EdgeInsets.only(right: 15),
                             width: 40,
                             child: Hero(
                               tag: "logo",
@@ -36,8 +42,8 @@ class _shopUIState extends State<shopUI> {
 
                             ),
                           ),
-                          const Text(
-                            "Welcome User",
+                          Text(
+                            "Welcome ${context.watch<registerProvider>().Name.split(" ")[0]}",
                             style: TextStyle(
                                 fontSize: 16
                             ),
@@ -75,7 +81,18 @@ class _shopUIState extends State<shopUI> {
                             child: Row(
                               children: [
                                 IconButton(
-                                  onPressed: (){},
+                                  onPressed: (){
+                                    showMaterialModalBottomSheet(
+                                      context: context,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(20),
+                                              topLeft: Radius.circular(20)
+                                          )
+                                      ),
+                                      builder: (context) => cartList()
+                                    );
+                                  },
                                   icon: const Icon(
                                       MyFlutterApp.cart,
                                     color: Color(0xff219C9C),
@@ -120,14 +137,7 @@ class _shopUIState extends State<shopUI> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {  },
-        backgroundColor: const Color(0xff219C9C),
-        child: const Icon(
-          MyFlutterApp.mic,
-          size: 20,
-        ),
-      ),
+      floatingActionButton: const speechFAB()
     );
   }
 }

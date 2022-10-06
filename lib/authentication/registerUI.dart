@@ -13,12 +13,12 @@ class registerUI extends StatefulWidget {
 class _registerUIState extends State<registerUI> {
   final _formKey = GlobalKey<FormState>();
 
-  TextEditingController _numCtrl = TextEditingController();
-  TextEditingController _nameCtrl = TextEditingController();
-  TextEditingController _addressCtrl = TextEditingController();
-  TextEditingController _age = TextEditingController();
-  TextEditingController _height = TextEditingController();
-  TextEditingController _weight = TextEditingController();
+  final TextEditingController _numCtrl = TextEditingController();
+  final TextEditingController _nameCtrl = TextEditingController();
+  final TextEditingController _addressCtrl = TextEditingController();
+  final TextEditingController _age = TextEditingController();
+  final TextEditingController _height = TextEditingController();
+  final TextEditingController _weight = TextEditingController();
 
   @override
   void dispose() {
@@ -40,11 +40,11 @@ class _registerUIState extends State<registerUI> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: ClampingScrollPhysics(parent: NeverScrollableScrollPhysics()),
+          physics: const ClampingScrollPhysics(parent: NeverScrollableScrollPhysics()),
           child: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(left: 33, right: 33, top: 50, bottom: 50),
+            padding: const EdgeInsets.only(left: 33, right: 33, top: 50, bottom: 50),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -221,6 +221,7 @@ class _registerUIState extends State<registerUI> {
                                         style: const TextStyle(
                                             fontSize: 14
                                         ),
+                                        controller: _age,
 
                                         textAlign: TextAlign.center,
                                         decoration: const InputDecoration(
@@ -262,6 +263,7 @@ class _registerUIState extends State<registerUI> {
                                         style: const TextStyle(
                                             fontSize: 14
                                         ),
+                                        controller: _height,
 
                                         textAlign: TextAlign.center,
                                         decoration: const InputDecoration(
@@ -303,6 +305,7 @@ class _registerUIState extends State<registerUI> {
                                         style: const TextStyle(
                                             fontSize: 14
                                         ),
+                                        controller: _weight,
 
                                         textAlign: TextAlign.center,
                                         decoration: const InputDecoration(
@@ -342,17 +345,17 @@ class _registerUIState extends State<registerUI> {
                             onPressed: (){
                               if (_formKey.currentState!.validate()) {
                                 setProvider();
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>verifyUI()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>const verifyUI()));
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                                fixedSize: Size(409, 53),
-                                backgroundColor: Color(0xff219C9C),
-                                shape: RoundedRectangleBorder(
+                                fixedSize: const Size(409, 53),
+                                backgroundColor: const Color(0xff219C9C),
+                                shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(6))
                                 )
                             ),
-                            child: Text(
+                            child: const Text(
                                 "Continue"
                             ),
                           ),
@@ -360,7 +363,7 @@ class _registerUIState extends State<registerUI> {
                             onPressed: (){
                               Navigator.pop(context);
                             },
-                            child: Text(
+                            child: const Text(
                                 "Already have an account? Login"
                             ),
                           )

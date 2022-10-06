@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,8 +20,21 @@ class _verifyUIState extends State<verifyUI> {
   TextEditingController _passCtrl = TextEditingController();
 
 
+  void createUserDoc(){
+
+    var collection = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+      "Name": context.read<registerProvider>().Name,
+      "Mobile": context.read<registerProvider>().Number,
+      "Address": context.read<registerProvider>().Address,
+      "Age": context.read<registerProvider>().Age,
+      "Height": context.read<registerProvider>().Height,
+      "Weight": context.read<registerProvider>().Weight
+    });
+  }
 
   Future<void> createAcc() async {
+
+
     try {
       final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: context.read<registerProvider>().Number + "@gmail.com",
@@ -139,6 +153,7 @@ class _verifyUIState extends State<verifyUI> {
                             onPressed: (){
                               if (_formKey.currentState!.validate()) {
                                 createAcc().whenComplete((){
+                                  createUserDoc();
                                   Navigator.pop(context);
                                   Navigator.pop(context);
                                   Navigator.push(context, MaterialPageRoute(builder: (context)=>const navigationBar()));
