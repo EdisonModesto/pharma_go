@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pharma_go/Home/remindersDialog.dart';
+import 'package:pharma_go/Home/viewDialog.dart';
 import 'package:pharma_go/authentication/loginUI.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
@@ -15,6 +20,7 @@ class homeUI extends StatefulWidget {
 
 class _homeUIState extends State<homeUI> {
 
+  CollectionReference recipes = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).collection("Reminders");
 
   @override
   void initState() {
@@ -129,59 +135,110 @@ class _homeUIState extends State<homeUI> {
                         ),
                       ),
                       Row(
-                        children: const [
-                          Text(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
                             "Reminders",
                             style: TextStyle(
                                 fontSize: 18
                             ),
                           ),
+                          IconButton(
+                            onPressed: (){
+                              showMaterialModalBottomSheet(
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(20),
+                                        topLeft: Radius.circular(20)
+                                    )
+                                ),
+                                context: context,
+                                builder: (context) => const reminderDialog(),
+                              );
+                            },
+                            icon: const Icon(Icons.add),
+                          )
                         ],
                       ),
                       Container(
                         height: 270,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: 3,
-                          itemBuilder: (context, index){
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 15),
-                            height: 80,
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(12)),
-                                color: Color(0xffD9DEDC),
-                              ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 80,
-                                  height: 80,
-                                  margin: const EdgeInsets.only(right: 20),
-                                  decoration: const BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                                    color: Color(0xff219C9C),
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      "12:00\nPM",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16
+                        child: StreamBuilder(
+                            stream: recipes.snapshots(),
+                            builder: (context,snapshot){
+                              if (snapshot.hasError) {
+                                return const Text('Something went wrong');
+                              }
+
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return LoadingIndicator(size: 40, borderWidth: 2);
+                              }
+
+                              return ListView.builder(
+                                itemCount:snapshot.data?.docs.length,
+                                itemBuilder: (context,index){
+                                  return Container(
+                                      margin: const EdgeInsets.only(bottom: 15),
+                                      height: 80,
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                                        color: Color(0xffD9DEDC),
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                const Text(
-                                  "Take a pill",
-                                  style: TextStyle(
-                                    fontSize: 16
-                                  ),
-                                )
-                              ],
-                            )
-                          );
-                        }),
+                                      child: ElevatedButton(
+                                        onPressed: (){
+                                          showMaterialModalBottomSheet(
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                    topRight: Radius.circular(20),
+                                                    topLeft: Radius.circular(20)
+                                                )
+                                            ),
+                                            context: context,
+                                            builder: (context) => viewDialog(title: snapshot.data?.docs[index]['Title'],time: snapshot.data?.docs[index]['Time'], docID: snapshot.data!.docs[index].id),
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          backgroundColor: const Color(0xffD9DEDC),
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                                          )
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 80,
+                                              height: 80,
+                                              margin: const EdgeInsets.only(right: 20),
+                                              decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                                color: Color(0xff219C9C),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  snapshot.data?.docs[index]['Time'],
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 16
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              snapshot.data?.docs[index]['Title'],
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                color: Color(0xff424242)
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                  );
+                                },
+                              );
+                            }),
+
                       )
                     ],
                   ),

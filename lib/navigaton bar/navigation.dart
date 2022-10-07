@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:pharma_go/AdminPanel/accountsAdminUI.dart';
+import 'package:pharma_go/AdminPanel/chatAdminUI.dart';
+import 'package:pharma_go/AdminPanel/orderAdminUI.dart';
 import 'package:pharma_go/Home/homeUI.dart';
 import 'package:pharma_go/Map/MapUI.dart';
 import 'package:pharma_go/MedScan/medScanUI.dart';
@@ -24,7 +27,20 @@ class _navigationBarState extends State<navigationBar> {
 
   final PersistentTabController _controller = PersistentTabController(initialIndex: 0);
 
-  List<Widget> _buildScreens() {
+
+  var collection = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid);
+  bool _isAdmin = false;
+
+  Future<void> isAdmin() async {
+    var docSnapshot = await collection.get();
+    Map<String, dynamic>? data = docSnapshot.data();
+    setState(() {
+      _isAdmin = data!["isAdmin"];
+    });
+  }
+
+
+  List<Widget> _userScreens() {
     return [
       const homeUI(),
       const shopUI(),
@@ -34,7 +50,17 @@ class _navigationBarState extends State<navigationBar> {
     ];
   }
 
-  List<PersistentBottomNavBarItem> _navBarsItems() {
+  List<Widget> _adminScreens() {
+    return [
+      const orderAdminUI(),
+      const chatAdminUI(),
+      const accountAdminUI(),
+    ];
+  }
+
+
+
+  List<PersistentBottomNavBarItem> _userNavBarsItems() {
     return [
       PersistentBottomNavBarItem(
         icon: const Icon(MyFlutterApp.home),
@@ -50,7 +76,7 @@ class _navigationBarState extends State<navigationBar> {
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(MyFlutterApp.scan),
-        title: ("Shop"),
+        title: ("Scan"),
         activeColorPrimary: const Color(0xff219C9C),
         inactiveColorPrimary: const Color(0xff7D7474),
       ),
@@ -69,12 +95,36 @@ class _navigationBarState extends State<navigationBar> {
     ];
   }
 
+  List<PersistentBottomNavBarItem> _adminNavBarsItems() {
+    return [
+      PersistentBottomNavBarItem(
+        icon: const Icon(MyFlutterApp.cart),
+        title: ("Shop"),
+        activeColorPrimary: const Color(0xff219C9C),
+        inactiveColorPrimary: const Color(0xff7D7474),
+      ),
+
+      PersistentBottomNavBarItem(
+        icon: const Icon(Icons.message_outlined),
+        title: ("Chat"),
+        activeColorPrimary: const Color(0xff219C9C),
+        inactiveColorPrimary: const Color(0xff7D7474),
+      ),
+
+      PersistentBottomNavBarItem(
+        icon: const Icon(MyFlutterApp.profile),
+        title: ("Profile"),
+        activeColorPrimary: const Color(0xff219C9C),
+        inactiveColorPrimary: const Color(0xff7D7474),
+      ),
+    ];
+  }
 
 
   @override
   void initState() {
-    //getUserInfo();
-    //checkAuth();
+    isAdmin();
+    print("loaded");
     super.initState();
   }
 
@@ -83,14 +133,14 @@ class _navigationBarState extends State<navigationBar> {
     return PersistentTabView(
       context,
       controller: _controller,
-      screens: _buildScreens(),
-      items: _navBarsItems(),
+      screens: _isAdmin ? _adminScreens() : _userScreens(),
+      items: _isAdmin ? _adminNavBarsItems() : _userNavBarsItems(),
       confineInSafeArea: true,
       backgroundColor: Colors.white, // Default is Colors.white.
       handleAndroidBackButtonPress: true, // Default is true.
       resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
       stateManagement: false, // Default is true.
-      hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
+      hideNavigationBarWhenKeyboardShows: false, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
         borderRadius: BorderRadius.circular(10.0),
         colorBehindNavBar: Colors.white,

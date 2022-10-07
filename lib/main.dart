@@ -59,12 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void endSplash()async{
     await Future.delayed(Duration(seconds: 3));
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user == null) {
         Navigator.push(context, MaterialPageRoute(builder: (context)=>const loginUI()));
       } else {
-        getUserInfo();
         Navigator.push(context, MaterialPageRoute(builder: (context)=> navigationBar()));
+
       }
     });
   }

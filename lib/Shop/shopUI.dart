@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pharma_go/Shop/cartList.dart';
+import 'package:pharma_go/Shop/expandItem.dart';
 import 'package:provider/provider.dart';
 
 import '../authentication/registerProvider.dart';
@@ -15,6 +19,10 @@ class shopUI extends StatefulWidget {
 }
 
 class _shopUIState extends State<shopUI> {
+
+  CollectionReference shop = FirebaseFirestore.instance.collection('Shop');
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +42,7 @@ class _shopUIState extends State<shopUI> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(right: 15),
+                            margin: const EdgeInsets.only(right: 15),
                             width: 40,
                             child: Hero(
                               tag: "logo",
@@ -44,7 +52,7 @@ class _shopUIState extends State<shopUI> {
                           ),
                           Text(
                             "Welcome ${context.watch<registerProvider>().Name.split(" ")[0]}",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16
                             ),
                           )
@@ -84,13 +92,13 @@ class _shopUIState extends State<shopUI> {
                                   onPressed: (){
                                     showMaterialModalBottomSheet(
                                       context: context,
-                                      shape: RoundedRectangleBorder(
+                                      shape: const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.only(
                                               topRight: Radius.circular(20),
                                               topLeft: Radius.circular(20)
                                           )
                                       ),
-                                      builder: (context) => cartList()
+                                      builder: (context) => const cartList()
                                     );
                                   },
                                   icon: const Icon(
@@ -111,23 +119,97 @@ class _shopUIState extends State<shopUI> {
                         ],
                       ),
                       Expanded(
-                        child: GridView.count(
-                          padding: const EdgeInsets.only(left: 0, right: 0, top: 15),
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 30,
-                          mainAxisSpacing: 20,
-                          children: List.generate(7, (index) {
-                              return Container(
-                                width: 145,
-                                height: 145,
-                                decoration: const BoxDecoration(
+                        child: StreamBuilder(
+                          stream: shop.snapshots(),
+                          builder: (context,snapshot) {
+                            if (snapshot.hasError) {
+                              return const Text('Something went wrong');
+                            }
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const LoadingIndicator(size: 40, borderWidth: 2);
+                            }
+
+                            return GridView.count(
+                              padding: const EdgeInsets.only(left: 0, right: 0, top: 15),
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 30,
+                              mainAxisSpacing: 20,
+                              children: List.generate(snapshot.data!.docs.length, (index) {
+                                return ClipRRect(
                                   borderRadius: BorderRadius.all(Radius.circular(12)),
-                                  color: Color(0xffD9DEDC),
-                                ),
-                              );
-                            },
-                          ),
-                        )
+                                  child: ElevatedButton(
+                                    onPressed: (){
+                                      showMaterialModalBottomSheet(
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(20),
+                                                topLeft: Radius.circular(20)
+                                            )
+                                        ),
+                                        context: context,
+                                        builder: (context) => const expandItem(),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      fixedSize: Size(145, 145)
+                                    ),
+                                    child: Container(
+                                      color: Color(0xffD9DEDC),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: ClipRRect(
+                                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12) ),
+                                              child: Container(
+                                                width: MediaQuery.of(context).size.width,
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.red,
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(
+                                                        "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1179&q=80"
+                                                    ),
+
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          SizedBox(
+                                            height: 60,
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  snapshot.data?.docs[index]['Heading'],
+                                                  style: const TextStyle(
+                                                      color: Color(0xff424242)
+                                                  ),
+                                                ),
+                                                Text(
+                                                    "Stocks: ${snapshot.data?.docs[index]['Stock']}",
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color(0xff424242)
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              ),
+                            );
+                          })
                       )
                     ]
                   ),

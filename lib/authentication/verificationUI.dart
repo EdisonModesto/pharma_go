@@ -22,13 +22,14 @@ class _verifyUIState extends State<verifyUI> {
 
   void createUserDoc(){
 
-    var collection = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+    FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).set({
       "Name": context.read<registerProvider>().Name,
       "Mobile": context.read<registerProvider>().Number,
       "Address": context.read<registerProvider>().Address,
       "Age": context.read<registerProvider>().Age,
       "Height": context.read<registerProvider>().Height,
-      "Weight": context.read<registerProvider>().Weight
+      "Weight": context.read<registerProvider>().Weight,
+      "isAdmin": false
     });
   }
 
