@@ -149,7 +149,7 @@ class _shopUIState extends State<shopUI> {
                                             )
                                         ),
                                         context: context,
-                                        builder: (context) => const expandItem(),
+                                        builder: (context) => expandItem(heading: snapshot.data?.docs[index]['Heading'], price: snapshot.data?.docs[index]['Price'], stocks: snapshot.data?.docs[index]['Stock'], desc: snapshot.data?.docs[index]['Description'],),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -181,24 +181,31 @@ class _shopUIState extends State<shopUI> {
 
                                           SizedBox(
                                             height: 60,
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  snapshot.data?.docs[index]['Heading'],
-                                                  style: const TextStyle(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left: 15, right: 15),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    snapshot.data?.docs[index]['Heading'],
+                                                    style: const TextStyle(
+                                                        color: Color(0xff424242)
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  Text(
+                                                      "Stocks: ${snapshot.data?.docs[index]['Stock']}",
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
                                                       color: Color(0xff424242)
-                                                  ),
-                                                ),
-                                                Text(
-                                                    "Stocks: ${snapshot.data?.docs[index]['Stock']}",
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Color(0xff424242)
-                                                  ),
-                                                )
-                                              ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
                                           )
                                         ],

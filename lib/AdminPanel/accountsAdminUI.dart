@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:provider/provider.dart';
 
 import '../my_flutter_app_icons.dart';
+import 'accountDetails.dart';
 
 class accountAdminUI extends StatefulWidget {
   const accountAdminUI({Key? key}) : super(key: key);
@@ -12,6 +16,9 @@ class accountAdminUI extends StatefulWidget {
 }
 
 class _accountAdminUIState extends State<accountAdminUI> {
+
+  CollectionReference users = FirebaseFirestore.instance.collection('Users');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,61 +84,85 @@ class _accountAdminUIState extends State<accountAdminUI> {
                           ],
                         ),
                         Expanded(
-                          child: ListView.builder(
-                              itemCount: 10,
-                              itemBuilder: (context, index){
-                                return Container(
-                                  margin: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                                    child: ElevatedButton(
-                                      onPressed: (){},
-                                      style: ElevatedButton.styleFrom(
-                                          fixedSize: Size(MediaQuery.of(context).size.width, 75),
-                                          backgroundColor: const Color(0xffD9DEDC)
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            height: 50,
-                                            width: 50,
-                                            margin: EdgeInsets.only(right: 15),
-                                            decoration: BoxDecoration(
-                                                color: Color(0xff219C9C),
-                                                borderRadius: BorderRadius.all(Radius.circular(30))
-                                            ),
-                                            child: Icon(
-                                              Icons.person,
-                                              color: Colors.white,
-                                            ),
+                          child: StreamBuilder(
+                            stream: users.orderBy("Name").snapshots(),
+                            builder: (context,snapshot){
+                              if (snapshot.hasError) {
+                                return const Text('Something went wrong');
+                              }
+
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const LoadingIndicator(size: 40, borderWidth: 2);
+                              }
+
+                              return ListView.builder(
+                                  itemCount: snapshot.data!.docs.length,
+                                  itemBuilder: (context, index){
+                                    return Container(
+                                      margin: const EdgeInsets.only(top: 10),
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                        child: ElevatedButton(
+                                          onPressed: (){
+                                            showMaterialModalBottomSheet(
+                                              shape: const RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.only(
+                                                      topRight: Radius.circular(20),
+                                                      topLeft: Radius.circular(20)
+                                                  )
+                                              ),
+                                              context: context,
+                                              builder: (context) => const accountsDetails(),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                              fixedSize: Size(MediaQuery.of(context).size.width, 75),
+                                              backgroundColor: const Color(0xffD9DEDC)
                                           ),
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: const [
-                                              Text(
-                                                "Customer Name (NO ID)",
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Color(0xff424242)
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                height: 50,
+                                                width: 50,
+                                                margin: const EdgeInsets.only(right: 15),
+                                                decoration: const BoxDecoration(
+                                                    color: Color(0xff219C9C),
+                                                    borderRadius: BorderRadius.all(Radius.circular(30))
+                                                ),
+                                                child: const Icon(
+                                                  Icons.person,
+                                                  color: Colors.white,
                                                 ),
                                               ),
-                                              Text(
-                                                "Tap for more details",
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Color(0xff424242)
-                                                ),
+                                              Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    snapshot.data!.docs[index]["Name"],
+                                                    style: const TextStyle(
+                                                        fontSize: 16,
+                                                        color: Color(0xff424242)
+                                                    ),
+                                                  ),
+                                                  const Text(
+                                                    "Tap for more details",
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Color(0xff424242)
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                );
-                              }),
+                                    );
+                                  });
+                            },
+                          ),
                         )
                       ]
                   ),

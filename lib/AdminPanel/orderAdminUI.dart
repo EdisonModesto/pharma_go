@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pharma_go/Shop/addItem.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:provider/provider.dart';
@@ -86,7 +88,18 @@ class _orderAdminUIState extends State<orderAdminUI> {
                                       )
                                   ),
                                   IconButton(
-                                      onPressed: (){},
+                                      onPressed: (){
+                                        showMaterialModalBottomSheet(
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(20),
+                                                  topLeft: Radius.circular(20)
+                                              )
+                                          ),
+                                          context: context,
+                                          builder: (context) => const addItemUI(),
+                                        );
+                                      },
                                       icon: const Icon(
                                         Icons.add,
                                         color: Color(0xff424242),

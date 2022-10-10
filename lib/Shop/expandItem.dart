@@ -9,7 +9,10 @@ import '../chat/chatUI.dart';
 import '../my_flutter_app_icons.dart';
 
 class expandItem extends StatefulWidget {
-  const expandItem({Key? key}) : super(key: key);
+
+  const expandItem({required this.heading, required this.price, required this.stocks, required this.desc, Key ? key}) : super(key: key);
+
+  final String heading, price, stocks, desc;
 
   @override
   State<expandItem> createState() => _expandItemState();
@@ -73,10 +76,10 @@ class _expandItemState extends State<expandItem> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                           Text(
                             overflow: TextOverflow.ellipsis,
-                            "Ascorbic Acid Xasorvic 100mg Chewable Tablet 100's ",
-                            style: TextStyle(
+                            widget.heading,
+                            style: const TextStyle(
                                 fontSize: 16
                             ),
                             softWrap: true,
@@ -88,10 +91,10 @@ class _expandItemState extends State<expandItem> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const Text(
+                                Text(
                                   overflow: TextOverflow.ellipsis,
-                                  "PHP 175",
-                                  style: TextStyle(
+                                  "PHP ${widget.price}",
+                                  style: const TextStyle(
                                       fontSize: 16,
                                     color: Color(0xff219C9C)
                                   ),
@@ -110,11 +113,11 @@ class _expandItemState extends State<expandItem> {
                                             pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                           );
                                         },
-                                        icon: Icon(Icons.chat),
+                                        icon: const Icon(Icons.chat),
                                       ),
                                       IconButton(
                                         onPressed: (){},
-                                        icon: Icon(Icons.add_shopping_cart_sharp),
+                                        icon: const Icon(Icons.add_shopping_cart_sharp),
                                       ),
                                     ],
                                   ),
@@ -132,8 +135,46 @@ class _expandItemState extends State<expandItem> {
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
+                          const Text(
+                            overflow: TextOverflow.ellipsis,
+                            "About",
+                            style: TextStyle(
+                                fontSize: 14
+                            ),
+                            softWrap: true,
+                            maxLines: 2,
+                          ),
                           Text(
+                            overflow: TextOverflow.ellipsis,
+                            "\nName: ${widget.heading}",
+                            style: const TextStyle(
+                                fontSize: 12,
+                            ),
+                            softWrap: true,
+                            maxLines: 2,
+                          ),
+                          Text(
+                            overflow: TextOverflow.ellipsis,
+                            "\nQuantity: ${widget.stocks}",
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                            softWrap: true,
+                            maxLines: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Card(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
                             overflow: TextOverflow.ellipsis,
                             "Description",
                             style: TextStyle(
@@ -144,31 +185,13 @@ class _expandItemState extends State<expandItem> {
                           ),
                           Text(
                             overflow: TextOverflow.ellipsis,
-                            "\nGeneric Name: Ascorbic Acid",
-                            style: TextStyle(
-                                fontSize: 12,
-                            ),
-                            softWrap: true,
-                            maxLines: 2,
-                          ),
-                          Text(
-                            overflow: TextOverflow.ellipsis,
-                            "\nQuantity: 100",
-                            style: TextStyle(
+                            "\n${widget.desc}",
+                            style: const TextStyle(
                               fontSize: 12,
                             ),
                             softWrap: true,
                             maxLines: 2,
                           ),
-                          Text(
-                            overflow: TextOverflow.ellipsis,
-                            "\nShop Location: Place",
-                            style: TextStyle(
-                              fontSize: 12,
-                            ),
-                            softWrap: true,
-                            maxLines: 2,
-                          )
                         ],
                       ),
                     ),
