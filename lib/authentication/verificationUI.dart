@@ -31,6 +31,12 @@ class _verifyUIState extends State<verifyUI> {
       "Weight": context.read<registerProvider>().Weight,
       "isAdmin": false
     });
+
+    FirebaseFirestore.instance.collection('Channels').doc(FirebaseAuth.instance.currentUser!.uid).set({
+      "Name": context.read<registerProvider>().Name,
+      "Mobile": context.read<registerProvider>().Number,
+      "Address": context.read<registerProvider>().Address,
+    });
   }
 
   Future<void> createAcc() async {

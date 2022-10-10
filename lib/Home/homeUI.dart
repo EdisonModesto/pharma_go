@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:pharma_go/Home/remindersDialog.dart';
 import 'package:pharma_go/Home/viewDialog.dart';
 import 'package:pharma_go/authentication/loginUI.dart';
@@ -10,6 +11,8 @@ import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
+
+import '../chat/chatUI.dart';
 
 class homeUI extends StatefulWidget {
   const homeUI({Key? key}) : super(key: key);
@@ -116,7 +119,14 @@ class _homeUIState extends State<homeUI> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 ElevatedButton(
-                                  onPressed: (){},
+                                  onPressed: (){
+                                    PersistentNavBarNavigator.pushNewScreen(
+                                      context,
+                                      screen: chatUI(channelID: FirebaseAuth.instance.currentUser!.uid, Name: context.read<registerProvider>().Name),
+                                      withNavBar: false, // OPTIONAL VALUE. True by default.
+                                      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                    );
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xff219C9C),
                                     elevation: 0,

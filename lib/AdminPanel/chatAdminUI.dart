@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
+import 'package:pharma_go/chat/chatUI.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +15,10 @@ class chatAdminUI extends StatefulWidget {
 }
 
 class _chatAdminUIState extends State<chatAdminUI> {
+
+
+  CollectionReference channels = FirebaseFirestore.instance.collection('Channels');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,11 +40,7 @@ class _chatAdminUIState extends State<chatAdminUI> {
                           Container(
                             margin: const EdgeInsets.only(right: 15),
                             width: 40,
-                            child: Hero(
-                              tag: "logo",
-                              child: Image.asset("assets/images/PharmaGo_rounded.png"),
-
-                            ),
+                            child: Image.asset("assets/images/PharmaGo_rounded.png"),
                           ),
                           Text(
                             "Welcome ${context.watch<registerProvider>().Name.split(" ")[0]}",
@@ -76,61 +80,84 @@ class _chatAdminUIState extends State<chatAdminUI> {
                           ],
                         ),
                         Expanded(
-                          child: ListView.builder(
-                              itemCount: 10,
-                              itemBuilder: (context, index){
-                                return Container(
-                                  margin: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                                    child: ElevatedButton(
-                                      onPressed: (){},
-                                      style: ElevatedButton.styleFrom(
-                                          fixedSize: Size(MediaQuery.of(context).size.width, 75),
-                                          backgroundColor: const Color(0xffD9DEDC)
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            height: 50,
-                                            width: 50,
-                                            margin: EdgeInsets.only(right: 15),
-                                            decoration: BoxDecoration(
-                                              color: Color(0xff219C9C),
-                                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                          child: StreamBuilder(
+                              stream: channels.snapshots(),
+                              builder: (context,snapshot){
+                                if (snapshot.hasError) {
+                                  return const Text('Something went wrong');
+                                }
+
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return const LoadingIndicator(size: 40, borderWidth: 2);
+                                }
+
+                                return ListView.builder(
+                                    itemCount: snapshot.data?.docs.length,
+                                    itemBuilder: (context, index){
+                                      return Container(
+                                        margin: const EdgeInsets.only(top: 10),
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                          child: ElevatedButton(
+                                            onPressed: (){
+                                              PersistentNavBarNavigator.pushNewScreen(
+                                                context,
+                                                screen: chatUI(channelID: snapshot.data!.docs[index].id, Name: snapshot.data!.docs[index]["Name"],),
+                                                withNavBar: false, // OPTIONAL VALUE. True by default.
+                                                pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                              );
+
+                                              //Navigator.push(context, MaterialPageRoute(builder: (context)=>const chatUI()));
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                fixedSize: Size(MediaQuery.of(context).size.width, 75),
+                                                backgroundColor: const Color(0xffD9DEDC)
                                             ),
-                                            child: Icon(
-                                              Icons.person,
-                                              color: Color(0xffD9DEDC)
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  height: 50,
+                                                  width: 50,
+                                                  margin: const EdgeInsets.only(right: 15),
+                                                  decoration: const BoxDecoration(
+                                                    color: Color(0xff219C9C),
+                                                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                                                  ),
+                                                  child: const Icon(
+                                                      Icons.person,
+                                                      color: Color(0xffD9DEDC)
+                                                  ),
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      snapshot.data!.docs[index]["Name"],
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Color(0xff424242),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "Previous Message",
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Color(0xff424242)
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: const [
-                                              Text(
-                                                "Customer Name",
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Color(0xff424242),
-                                                ),
-                                              ),
-                                              Text(
-                                                "Previous Message",
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Color(0xff424242)
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                        ),
+                                      );
+                                    },
                                 );
-                              }),
+                              },
+                          ),
                         )
                       ]
                   ),

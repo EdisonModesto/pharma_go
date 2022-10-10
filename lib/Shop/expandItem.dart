@@ -1,6 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 
+import '../authentication/registerProvider.dart';
+import '../chat/chatUI.dart';
 import '../my_flutter_app_icons.dart';
 
 class expandItem extends StatefulWidget {
@@ -97,7 +102,14 @@ class _expandItemState extends State<expandItem> {
                                   child: Row(
                                     children: [
                                       IconButton(
-                                        onPressed: (){},
+                                        onPressed: (){
+                                          PersistentNavBarNavigator.pushNewScreen(
+                                            context,
+                                            screen: chatUI(channelID: FirebaseAuth.instance.currentUser!.uid, Name: context.read<registerProvider>().Name),
+                                            withNavBar: false, // OPTIONAL VALUE. True by default.
+                                            pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                          );
+                                        },
                                         icon: Icon(Icons.chat),
                                       ),
                                       IconButton(
