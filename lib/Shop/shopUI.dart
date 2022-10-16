@@ -149,7 +149,7 @@ class _shopUIState extends State<shopUI> {
                                             )
                                         ),
                                         context: context,
-                                        builder: (context) => expandItem(heading: snapshot.data?.docs[index]['Heading'], price: snapshot.data?.docs[index]['Price'], stocks: snapshot.data?.docs[index]['Stock'], desc: snapshot.data?.docs[index]['Description'],),
+                                        builder: (context) => expandItem(heading: snapshot.data?.docs[index]['Heading'], price: snapshot.data?.docs[index]['Price'], stocks: snapshot.data?.docs[index]['Stock'], desc: snapshot.data?.docs[index]['Description'], id: snapshot.data!.docs[index].id,),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(

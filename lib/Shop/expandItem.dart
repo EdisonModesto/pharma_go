@@ -1,6 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 
@@ -10,9 +12,9 @@ import '../my_flutter_app_icons.dart';
 
 class expandItem extends StatefulWidget {
 
-  const expandItem({required this.heading, required this.price, required this.stocks, required this.desc, Key ? key}) : super(key: key);
+  const expandItem({required this.heading, required this.price, required this.stocks, required this.desc, required this.id, Key ? key}) : super(key: key);
 
-  final String heading, price, stocks, desc;
+  final String heading, price, stocks, desc, id;
 
   @override
   State<expandItem> createState() => _expandItemState();
@@ -116,7 +118,13 @@ class _expandItemState extends State<expandItem> {
                                         icon: const Icon(Icons.chat),
                                       ),
                                       IconButton(
-                                        onPressed: (){},
+                                        onPressed: (){
+                                          var collection = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Cart").doc();
+                                          collection.set({
+                                            "Item": widget.id,
+                                          });
+                                          Fluttertoast.showToast(msg: "Item Added to Cart!");
+                                        },
                                         icon: const Icon(Icons.add_shopping_cart_sharp),
                                       ),
                                     ],
