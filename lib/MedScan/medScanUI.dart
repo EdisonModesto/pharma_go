@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
@@ -28,17 +29,8 @@ class _medScanUIState extends State<medScanUI> {
   String recognizedText = "";
 
   void _initializeCamera() async {
-    // Get list of cameras of the device
-    //List<CameraDescription> cameras = await availableCameras();
 
-    //_camera = CameraController(cameras[0], ResolutionPreset.low);
-
-    // Initialize the CameraController
-    _camera?.initialize().then((_) async {
-
-      // Start streaming images from platform camera
-      await _camera?.startImageStream((CameraImage image) => _processCameraImage(image));  // image processing and text recognition.
-    });
+    await _camera?.startImageStream((CameraImage image) => _processCameraImage(image));  // image processing and text recognition.
   }
 
 
@@ -48,9 +40,7 @@ class _medScanUIState extends State<medScanUI> {
     final RecognizedText recognisedText = await textDetector.processImage(inputImage);
 // Using the recognised text.
     for (TextBlock block in recognisedText.blocks) {
-      setState((){
         recognizedText = block.text + " ";
-      });
     }
   }
 
@@ -89,11 +79,11 @@ class _medScanUIState extends State<medScanUI> {
 
   void setupCam(){
     _camera?.initialize().then((_) {
-      _initializeCamera();
       if (!mounted) {
         return;
       }
-      setState(() {});
+      _initializeCamera();
+    //  setState(() {});
     }).catchError((Object e) {
       if (e is CameraException) {
         switch (e.code) {
@@ -109,20 +99,32 @@ class _medScanUIState extends State<medScanUI> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _camera!.dispose();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+
+    // App state changed before we got the chance to initialize.
+    if (_camera == null || !_camera!.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      _camera!.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+
+    }
   }
+
 
   @override
   void initState() {
     super.initState();
+
     _cameras =  context.read<medScanProvider>().cameras;
-    _camera = CameraController(_cameras[0], ResolutionPreset.max);
+    _camera = CameraController(_cameras[0], ResolutionPreset.medium, imageFormatGroup: ImageFormatGroup.yuv420);
     WidgetsBinding.instance.addPostFrameCallback((_)async{
       setupCam();
     });
   }
+
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,7 +210,11 @@ class _medScanUIState extends State<medScanUI> {
                                   ),
                                   child: !_camera!.value.isInitialized ?
                                   Container(
-                                    child: Text("not init"),
+                                    child: Center(
+                                      child: Text(
+                                        "Camera Permission Required"
+                                      ),
+                                    ),
                                   ) :
                                   CameraPreview(
                                     _camera!,
@@ -217,16 +223,47 @@ class _medScanUIState extends State<medScanUI> {
                               ],
                             )
                         ),
-                        Container(
-                          height: 150,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: const BoxDecoration(
-                            color: Color(0xffD9DEDC),
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-                          ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
                           child: Center(
-                            child: Text(
-                              "${recognizedText}"
+                            child: Container(
+                              height: 150,
+                              width: MediaQuery.of(context).size.width,
+                              padding: EdgeInsets.all(15),
+                              decoration: const BoxDecoration(
+                                color: Color(0xffD9DEDC),
+                                borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                              ),
+                              child: Center(
+                                child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Medicine Name: ${recognizedText}"
+                                        ),
+                                        Text(
+                                            "Dosage: "
+                                        ),
+                                        Text(
+                                            "SRP: "
+                                        ),
+                                        Center(
+                                          child: ElevatedButton(
+                                            onPressed: (){
+                                              setState(() {});
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color(0xff219C9C)
+                                            ),
+                                            child: Text(
+                                              "Capture"
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                              ),
                             ),
                           ),
                         )
