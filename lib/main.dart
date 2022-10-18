@@ -1,8 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pharma_go/Home/homeUI.dart';
+import 'package:pharma_go/MedScan/medScanProvider.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/navigaton%20bar/navigation.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +12,11 @@ import 'package:provider/provider.dart';
 import 'authentication/loginUI.dart';
 import 'firebase_options.dart';
 
+late List<CameraDescription> _cameras;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  _cameras = await availableCameras();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -19,6 +24,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_)=> registerProvider()),
+        ChangeNotifierProvider(create: (_)=> medScanProvider()),
       ],
         child: const  MyApp()),
     );
@@ -88,6 +94,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     getUserInfo();
     endSplash();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<medScanProvider>().setCameras(_cameras);
+    });
+
+
     super.initState();
   }
 
