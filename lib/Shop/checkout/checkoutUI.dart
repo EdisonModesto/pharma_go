@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
 
@@ -5,13 +7,49 @@ import '../../authentication/registerProvider.dart';
 import '../../my_flutter_app_icons.dart';
 
 class checkoutUI extends StatefulWidget {
-  const checkoutUI({Key? key}) : super(key: key);
+  const checkoutUI({required this.names, required this.prices, Key? key}) : super(key: key);
+
+  final List names;
+  final List prices;
 
   @override
   State<checkoutUI> createState() => _checkoutUIState();
 }
 
 class _checkoutUIState extends State<checkoutUI> {
+
+
+  int total = 0;
+  int stats = 0;
+  bool isBtnVis = true;
+  List status = ["Awaiting Payment", "Waiting Reference No.", "Ready for pickup"];
+  String ref = "Payment Required";
+
+  void listenStatus(){
+    DocumentReference reference = FirebaseFirestore.instance.collection('Orders').doc(FirebaseAuth.instance.currentUser!.uid);
+    var listener;
+    listener = reference.snapshots().listen((querySnapshot) {
+      print("DEBUG: ${querySnapshot.get("Status")}");
+      if(querySnapshot.get("Status") == "For Pickup"){
+        setState(() {
+          stats = 2;
+          ref = querySnapshot.get("RefID").toString();
+        });
+        listener.cancel();
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //listenStatus();
+
+    for(int i = 0; i < widget.names.length; i++){
+      total += int.parse(widget.prices[i]);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +105,75 @@ class _checkoutUIState extends State<checkoutUI> {
                           SizedBox(
                             height: 150,
                             width: MediaQuery.of(context).size.width,
-                            child: const Placeholder(),
+                            child: Card(
+                              color: const Color(0xffD9DEDC),
+                              child:
+                              Padding(
+                                padding: const EdgeInsets.all(15),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                            "Payment"
+                                        ),
+
+                                        InkWell(
+                                          onTap: (){
+
+                                          },
+                                          child: Icon(
+                                            Icons.message,
+                                            size: 20,
+                                          ),
+                                        ),
+
+
+                                      ],
+                                    ),
+                                    const Text(
+                                      "GCash: 09279872019"
+                                    ),
+                                    Text(
+                                        "Status: ${status[stats]}"
+                                    ),
+                                    Visibility(
+                                      visible: isBtnVis,
+                                      child: ElevatedButton(
+                                        onPressed: (){
+                                          print("DEBUG: SENDING TO FB");
+                                          var col = FirebaseFirestore.instance.collection('Orders').doc(FirebaseAuth.instance.currentUser?.uid);
+                                          col.set({
+                                            "Buyer": context.read<registerProvider>().Name.split(" ")[0].toString(),
+                                            "Total": total,
+                                            "Status": "For Validation"
+                                          });
+                                          var colItems = col.collection("items");
+                                          for(int i = 0; i < widget.names.length; i++){
+                                            colItems.doc().set({
+                                              "itemName": widget.names[i],
+                                              "itemPrice": widget.prices[i]
+                                            });
+                                            print("DEBUGING : $i");
+                                          }
+                                          listenStatus();
+                                          setState(() {
+                                            isBtnVis = false;
+                                            stats += 1;
+                                          });
+
+                                        },
+                                        child: const Text(
+                                          "Payment Sent"
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                           Card(
                             shape: const RoundedRectangleBorder(
@@ -101,8 +207,8 @@ class _checkoutUIState extends State<checkoutUI> {
                                     const Divider(
                                       thickness: 1, color: Colors.grey,
                                     ),
-                                    const Text(
-                                      "Reference Number: 56df4sj64kf",
+                                    Text(
+                                      "Reference Number: ${ref}",
                                       style: TextStyle(
                                           fontSize: 12,
                                       ),
@@ -113,7 +219,7 @@ class _checkoutUIState extends State<checkoutUI> {
                                     Expanded(
                                       child: ListView.builder(
                                         shrinkWrap: true,
-                                        itemCount: 4,
+                                        itemCount: widget.names.length,
                                         itemBuilder: (context, index){
                                         return Container(
                                           height: 30,
@@ -121,8 +227,8 @@ class _checkoutUIState extends State<checkoutUI> {
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text("Item Name"),
-                                              Text("100")
+                                              Text(widget.names[index]),
+                                              Text(widget.prices[index]),
                                             ],
                                           ),
                                         );
@@ -131,8 +237,8 @@ class _checkoutUIState extends State<checkoutUI> {
                                     const Divider(
                                       thickness: 1, color: Colors.grey,
                                     ),
-                                    const Text(
-                                      "Total: 400",
+                                    Text(
+                                      "Total: $total",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold

@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+//import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,11 +12,11 @@ import 'package:provider/provider.dart';
 import 'authentication/loginUI.dart';
 import 'firebase_options.dart';
 
-late List<CameraDescription> _cameras;
+//late List<CameraDescription> _cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  _cameras = await availableCameras();
+ // _cameras = await availableCameras();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -94,9 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     getUserInfo();
     endSplash();
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      context.read<medScanProvider>().setCameras(_cameras);
-    });
+    //WidgetsBinding.instance.addPostFrameCallback((_){
+      //context.read<medScanProvider>().setCameras(_cameras);
+    //});
 
 
     super.initState();

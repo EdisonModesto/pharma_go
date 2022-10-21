@@ -20,6 +20,8 @@ class _cartListState extends State<cartList> {
   var shop = FirebaseFirestore.instance.collection('Shop');
   CollectionReference Cart = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Cart");
 
+  List name = [];
+  List price = [];
 
   getFunc(snap)async{
     var item = await shop.doc(snap).get();
@@ -80,14 +82,13 @@ class _cartListState extends State<cartList> {
                       crossAxisSpacing: 30,
                       mainAxisSpacing: 20,
                       children: List.generate(snapshot.data!.docs.length, (index) {
-                        String head = "";
-                        print(snapshot.data!.docs[index]["Item"]);
-                        var item = getFunc(snapshot.data!.docs[index]["Item"]);
-
-
                         return StreamBuilder(
-                          stream: shop.doc(snapshot.data!.docs[index]["Item"]).snapshots(),
+                          stream: shop.doc(snapshot.data?.docs[index]["Item"]).snapshots(),
                           builder: (context,snapshot1) {
+                            name.add(snapshot1.data!["Heading"]);
+                            price.add(snapshot1.data!["Price"]);
+                            print("DEBUGING: $name");
+                            print("DEBUGING: $price");
                             return ClipRRect(
                               borderRadius: BorderRadius.all(Radius.circular(12)),
                               child: ElevatedButton(
@@ -163,9 +164,10 @@ class _cartListState extends State<cartList> {
           ),
           ElevatedButton(
             onPressed: (){
+              Navigator.pop(context);
               PersistentNavBarNavigator.pushNewScreen(
                 context,
-                screen: checkoutUI(),
+                screen: checkoutUI(names: name, prices: price,),
                 withNavBar: true, // OPTIONAL VALUE. True by default.
                 pageTransitionAnimation: PageTransitionAnimation.cupertino,
               );

@@ -1,8 +1,8 @@
-import 'package:camera/camera.dart';
+
 import 'package:flutter/widgets.dart';
 
 class medScanProvider with ChangeNotifier{
-  late List<CameraDescription> cameras;
+/*  late List<CameraDescription> cameras;
   String lastWord = "";
 
   void setCameras(p1){
@@ -13,5 +13,5 @@ class medScanProvider with ChangeNotifier{
   void setWord(str){
     lastWord = str;
     notifyListeners();
-  }
+  }*/
 }

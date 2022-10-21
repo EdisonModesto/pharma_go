@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -6,7 +6,7 @@ import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+
 
 import 'medScanProvider.dart';
 
@@ -19,23 +19,23 @@ class medScanUI extends StatefulWidget {
 
 class _medScanUIState extends State<medScanUI> {
 
-  // Create the CameraController
+/*  // Create the CameraController
   late CameraController? _camera;
   late List<CameraDescription> _cameras;
 
 
   // Initializing the TextDetector
   final textDetector = GoogleMlKit.vision.textRecognizer();
-  String recognizedText = "";
+  String recognizedText = "";*/
 
-  void _initializeCamera() async {
+  /*void _initializeCamera() async {
 
     await _camera?.startImageStream((CameraImage image) => _processCameraImage(image));  // image processing and text recognition.
-  }
+  }*/
 
 
-  void _processCameraImage(CameraImage image) async {
-// getting InputImage from CameraImage
+  //void _processCameraImage(CameraImage image) async {
+/*// getting InputImage from CameraImage
     InputImage inputImage = getInputImage(image);
     final RecognizedText recognisedText = await textDetector.processImage(inputImage);
 // Using the recognised text.
@@ -111,18 +111,18 @@ class _medScanUIState extends State<medScanUI> {
     } else if (state == AppLifecycleState.resumed) {
 
     }
-  }
+  }*/
 
 
   @override
   void initState() {
     super.initState();
 
-    _cameras =  context.read<medScanProvider>().cameras;
+    /*_cameras =  context.read<medScanProvider>().cameras;
     _camera = CameraController(_cameras[0], ResolutionPreset.medium, imageFormatGroup: ImageFormatGroup.yuv420);
     WidgetsBinding.instance.addPostFrameCallback((_)async{
       setupCam();
-    });
+    });*/
   }
 
 
@@ -208,17 +208,17 @@ class _medScanUIState extends State<medScanUI> {
                                     border: Border.all(color: Colors.black, width: 8,
                                     )
                                   ),
-                                  child: !_camera!.value.isInitialized ?
+                                  child:// !_camera!.value.isInitialized ?
                                   Container(
                                     child: Center(
                                       child: Text(
                                         "Camera Permission Required"
                                       ),
                                     ),
-                                  ) :
-                                  CameraPreview(
+                                  )
+                                 /* CameraPreview(
                                     _camera!,
-                                  ),
+                                  ),*/
                                 ),
                               ],
                             )
@@ -240,7 +240,7 @@ class _medScanUIState extends State<medScanUI> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          "Medicine Name: ${recognizedText}"
+                                          "Medicine Name: "
                                         ),
                                         Text(
                                             "Dosage: "
