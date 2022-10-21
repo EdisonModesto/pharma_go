@@ -54,7 +54,6 @@ class _homeUIState extends State<homeUI> {
                             child: Hero(
                               tag: "logo",
                               child: Image.asset("assets/images/PharmaGo_rounded.png"),
-
                             ),
                           ),
                           Text(

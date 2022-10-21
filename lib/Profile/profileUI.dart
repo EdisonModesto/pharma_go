@@ -70,119 +70,159 @@ class _profileUIState extends State<profileUI> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 20, bottom: 20),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text(
-                              "Profile",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          height: 100,
-                          child: Center(
-                            child: Text(
-                              "${context.watch<registerProvider>().Name}",
-                              style: const TextStyle(
-                                fontSize: 18
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const Text(
-                          "Details",
-                          style: TextStyle(
-                            fontSize: 16
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 15),
-                          height: 150,
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(15),
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            color: Color(0xffD9DEDC)
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                  child: SingleChildScrollView(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
                               Text(
-                                "Mobile Number: ${context.watch<registerProvider>().Number}",
-                                style: const TextStyle(
-                                  fontSize: 14
-                                ),
-                              ),
-                              Text(
-                                "Age:  ${context.watch<registerProvider>().Age}",
-                                style: const TextStyle(
-                                    fontSize: 14
-                                ),
-                              ),
-                              Text(
-                                "Height:  ${context.watch<registerProvider>().Height}",
-                                style: const TextStyle(
-                                    fontSize: 14
-                                ),
-                              ),
-                              Text(
-                                "Weight:  ${context.watch<registerProvider>().Weight}",
-                                style: const TextStyle(
-                                    fontSize: 14
+                                "Profile",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 15),
-                          height: 75,
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(15),
-                          decoration: const BoxDecoration(
+                          Container(
+                            height: 100,
+                            child: Center(
+                              child: Text(
+                                "${context.watch<registerProvider>().Name}",
+                                style: const TextStyle(
+                                  fontSize: 18
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const Text(
+                            "Details",
+                            style: TextStyle(
+                              fontSize: 16
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 15),
+                            height: 150,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(15),
+                            decoration: const BoxDecoration(
                               borderRadius: BorderRadius.all(Radius.circular(12)),
                               color: Color(0xffD9DEDC)
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Logout of account",
-                                style: TextStyle(
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Mobile Number: ${context.watch<registerProvider>().Number}",
+                                  style: const TextStyle(
                                     fontSize: 14
-                                ),
-                              ),
-                              ElevatedButton(
-                                onPressed: (){
-                                  FirebaseAuth.instance.signOut();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xff219C9C),
-                                  elevation: 0,
-                                  fixedSize: Size(100, 10),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(20))
                                   ),
                                 ),
-                                child: Text(
-                                  "Logout",
+                                Text(
+                                  "Age:  ${context.watch<registerProvider>().Age}",
+                                  style: const TextStyle(
+                                      fontSize: 14
+                                  ),
                                 ),
-                              )
-                            ],
+                                Text(
+                                  "Height:  ${context.watch<registerProvider>().Height}",
+                                  style: const TextStyle(
+                                      fontSize: 14
+                                  ),
+                                ),
+                                Text(
+                                  "Weight:  ${context.watch<registerProvider>().Weight}",
+                                  style: const TextStyle(
+                                      fontSize: 14
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ]
+                          Container(
+                            margin: const EdgeInsets.only(top: 15),
+                            height: 75,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(15),
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                color: Color(0xffD9DEDC)
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Upload ID",
+                                  style: TextStyle(
+                                      fontSize: 14
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: (){
+                                    FirebaseAuth.instance.signOut();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xff219C9C),
+                                    elevation: 0,
+                                    fixedSize: Size(100, 10),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(20))
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Upload",
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 15),
+                            height: 75,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(15),
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                color: Color(0xffD9DEDC)
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Logout of account",
+                                  style: TextStyle(
+                                      fontSize: 14
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: (){
+                                    FirebaseAuth.instance.signOut();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xff219C9C),
+                                    elevation: 0,
+                                    fixedSize: Size(100, 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(Radius.circular(20))
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Logout",
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ]
+                    ),
                   ),
                 ),
               )

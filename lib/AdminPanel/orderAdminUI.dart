@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
@@ -7,6 +9,8 @@ import 'package:pharma_go/AdminPanel/orderExpand.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:provider/provider.dart';
+
+import '../notification/Notify.dart';
 
 class orderAdminUI extends StatefulWidget {
   const orderAdminUI({Key? key}) : super(key: key);
@@ -57,7 +61,10 @@ class _orderAdminUIState extends State<orderAdminUI> {
                         ),
                       ),
                       IconButton(
-                        onPressed: (){},
+                        onPressed: (){
+                          print("HELLO");
+                          Notify.instantNotify("This is a title", " This is a body");
+                        },
                         icon: const Icon(
                           MyFlutterApp.bell,
                           color: Color(0xff219C9C),
