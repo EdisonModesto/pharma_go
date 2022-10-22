@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../authentication/registerProvider.dart';
 import '../my_flutter_app_icons.dart';
+import '../notification/NotificationUI.dart';
 import '../speechRecognition/speechFAB.dart';
 
 class shopUI extends StatefulWidget {
@@ -60,7 +61,18 @@ class _shopUIState extends State<shopUI> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        showMaterialModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  topLeft: Radius.circular(20)
+                              )
+                          ),
+                          context: context,
+                          builder: (context) => const notifUI(),
+                        );
+                      },
                       icon: const Icon(
                         MyFlutterApp.bell,
                         color: Color(0xff219C9C),

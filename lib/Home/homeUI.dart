@@ -9,6 +9,7 @@ import 'package:pharma_go/Home/viewDialog.dart';
 import 'package:pharma_go/authentication/loginUI.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
+import 'package:pharma_go/notification/NotificationUI.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +67,18 @@ class _homeUIState extends State<homeUI> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        showMaterialModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  topLeft: Radius.circular(20)
+                              )
+                          ),
+                          context: context,
+                          builder: (context) => const notifUI(),
+                        );
+                      },
                       icon: const Icon(
                         MyFlutterApp.bell,
                         color: Color(0xff219C9C),

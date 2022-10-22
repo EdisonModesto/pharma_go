@@ -2,12 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
 
 
+import '../notification/NotificationUI.dart';
 import 'medScanProvider.dart';
 
 class medScanUI extends StatefulWidget {
@@ -162,7 +164,18 @@ class _medScanUIState extends State<medScanUI> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        showMaterialModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  topLeft: Radius.circular(20)
+                              )
+                          ),
+                          context: context,
+                          builder: (context) => const notifUI(),
+                        );
+                      },
                       icon: const Icon(
                         MyFlutterApp.bell,
                         color: Color(0xff219C9C),

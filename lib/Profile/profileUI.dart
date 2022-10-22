@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
 
 import '../authentication/loginUI.dart';
 import '../my_flutter_app_icons.dart';
+import '../notification/NotificationUI.dart';
 
 class profileUI extends StatefulWidget {
   const profileUI({Key? key}) : super(key: key);
@@ -58,7 +60,18 @@ class _profileUIState extends State<profileUI> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        showMaterialModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  topLeft: Radius.circular(20)
+                              )
+                          ),
+                          context: context,
+                          builder: (context) => const notifUI(),
+                        );
+                      },
                       icon: const Icon(
                         MyFlutterApp.bell,
                         color: Color(0xff219C9C),

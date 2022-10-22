@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 
 import '../../authentication/registerProvider.dart';
+import '../../chat/chatUI.dart';
 import '../../my_flutter_app_icons.dart';
+import 'dialogUI.dart';
 
 class checkoutUI extends StatefulWidget {
   const checkoutUI({required this.names, required this.prices, Key? key}) : super(key: key);
@@ -34,6 +37,9 @@ class _checkoutUIState extends State<checkoutUI> {
         setState(() {
           stats = 2;
           ref = querySnapshot.get("RefID").toString();
+        });
+        showDialog(context: context, builder: (context){
+          return dialogUI(title: "Payment Confirmed!", body: "Your order is now confirmed and is ready for pickup. Please take a screenshot of the receipt and show it to the cashier",);
         });
         listener.cancel();
       }
@@ -122,7 +128,12 @@ class _checkoutUIState extends State<checkoutUI> {
 
                                         InkWell(
                                           onTap: (){
-
+                                            PersistentNavBarNavigator.pushNewScreen(
+                                              context,
+                                              screen: chatUI(channelID: FirebaseAuth.instance.currentUser!.uid, Name: context.read<registerProvider>().Name),
+                                              withNavBar: false, // OPTIONAL VALUE. True by default.
+                                              pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                            );
                                           },
                                           child: Icon(
                                             Icons.message,
@@ -158,12 +169,14 @@ class _checkoutUIState extends State<checkoutUI> {
                                             });
                                             print("DEBUGING : $i");
                                           }
+                                          showDialog(context: context, builder: (context){
+                                            return dialogUI(title: "Payment Sent!", body: "Please wait for the seller to confirm your payment. A reference number will be available when confirmed.",);
+                                          });
                                           listenStatus();
                                           setState(() {
                                             isBtnVis = false;
                                             stats += 1;
                                           });
-
                                         },
                                         child: const Text(
                                           "Payment Sent"

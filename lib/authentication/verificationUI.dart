@@ -8,8 +8,8 @@ import 'package:pharma_go/navigaton%20bar/navigation.dart';
 import 'package:provider/provider.dart';
 
 class verifyUI extends StatefulWidget {
-  const verifyUI({Key? key}) : super(key: key);
-
+  const verifyUI({required this.verificationId, Key? key}) : super(key: key);
+  final verificationId;
   @override
   State<verifyUI> createState() => _verifyUIState();
 }
@@ -40,8 +40,6 @@ class _verifyUIState extends State<verifyUI> {
   }
 
   Future<void> createAcc() async {
-
-
     try {
       final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: context.read<registerProvider>().Number + "@gmail.com",
@@ -58,10 +56,30 @@ class _verifyUIState extends State<verifyUI> {
     }
   }
 
+  void verifyotp()async{
+    FirebaseAuth auth = FirebaseAuth.instance;
+    // Create a PhoneAuthCredential with the code
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: widget.verificationId, smsCode: _passCtrl.text);
+
+    // Sign the user in (or link) with the credential
+    await auth.signInWithCredential(credential);
+
+    createUserDoc();
+    Navigator.pop(context);
+    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>const navigationBar()));
+  }
+
   @override
   void dispose() {
     _passCtrl.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    //sendOTP();
+    super.initState();
   }
 
   @override
@@ -102,7 +120,7 @@ class _verifyUIState extends State<verifyUI> {
                               Row(
                                 children: const [
                                   Text(
-                                    "Set Password",
+                                    "Enter OTP",
                                     style: TextStyle(
                                         fontSize: 16
                                     ),
@@ -125,7 +143,7 @@ class _verifyUIState extends State<verifyUI> {
                                         fontSize: 14
                                     ),
                                     decoration: const InputDecoration(
-                                      label: Text("Password"),
+                                      label: Text("OTP"),
                                       errorStyle: TextStyle(height: 0),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
@@ -159,12 +177,13 @@ class _verifyUIState extends State<verifyUI> {
                           ElevatedButton(
                             onPressed: (){
                               if (_formKey.currentState!.validate()) {
-                                createAcc().whenComplete((){
+                                /*createAcc().whenComplete((){
                                   createUserDoc();
                                   Navigator.pop(context);
                                   Navigator.pop(context);
                                   Navigator.push(context, MaterialPageRoute(builder: (context)=>const navigationBar()));
-                                });
+                                });*/
+                                verifyotp();
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -175,7 +194,7 @@ class _verifyUIState extends State<verifyUI> {
                                 )
                             ),
                             child: const Text(
-                                "Register"
+                                "Confirm"
                             ),
                           ),
                           TextButton(

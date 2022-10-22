@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:osm_nominatim/osm_nominatim.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:latlong2/latlong.dart' as latLng;
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
+
+import '../notification/NotificationUI.dart';
 
 class mapUI extends StatefulWidget {
   const mapUI({Key? key}) : super(key: key);
@@ -90,7 +93,18 @@ class _mapUIState extends State<mapUI> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        showMaterialModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  topLeft: Radius.circular(20)
+                              )
+                          ),
+                          context: context,
+                          builder: (context) => const notifUI(),
+                        );
+                      },
                       icon: const Icon(
                         MyFlutterApp.bell,
                         color: Color(0xff219C9C),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pharma_go/authentication/registerUI.dart';
+import 'package:pharma_go/authentication/verificationUI.dart';
 import 'package:pharma_go/navigaton%20bar/navigation.dart';
 
 import '../Home/homeUI.dart';
@@ -19,6 +20,22 @@ class _loginUIState extends State<loginUI> {
 
   final TextEditingController _numCtrl = TextEditingController();
   final TextEditingController _passCtrl = TextEditingController();
+
+  var id = "";
+
+
+  void sendOTP()async{
+    
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: "+63${_numCtrl.text.substring(1)}",
+      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationFailed: (FirebaseAuthException e) {},
+      codeSent: (String verificationId, int? resendToken) {
+        id = verificationId;
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
 
   Future<void> loginUser() async {
     try {
@@ -153,43 +170,55 @@ class _loginUIState extends State<loginUI> {
                                   ),
                                SizedBox(
                                     height: 55,
-                                    child: TextFormField(
-                                      obscureText: true,
-                                      controller: _passCtrl,
-                                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return '';
-                                          }
-                                          return null;
-                                        },
-                                        style: const TextStyle(
-                                            fontSize: 14
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(
+                                          width: 250,
+                                          child: TextFormField(
+                                            obscureText: true,
+                                            controller: _passCtrl,
+                                            keyboardType: TextInputType.number,
+                                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                                              validator: (value) {
+                                                if (value == null || value.isEmpty) {
+                                                  return '';
+                                                }
+                                                return null;
+                                              },
+                                              style: const TextStyle(
+                                                  fontSize: 14
+                                              ),
+                                              decoration: const InputDecoration(
+                                                label: Text("OTP"),
+                                                errorStyle: TextStyle(height: 0),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.all(
+                                                    Radius.circular(8),
+                                                  ),
+                                                  borderSide: BorderSide(
+                                                    color: Color(0xff219C9C),
+                                                    width: 2.0,
+                                                  ),
+                                                ),
+
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.all(
+                                                    Radius.circular(8),
+                                                  ),
+                                                  borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 6.0,
+                                                  ),
+                                                ),
+
+                                              )
+                                          ),
                                         ),
-                                        decoration: const InputDecoration(
-                                          label: Text("Password"),
-                                          errorStyle: TextStyle(height: 0),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(8),
-                                            ),
-                                            borderSide: BorderSide(
-                                              color: Color(0xff219C9C),
-                                              width: 2.0,
-                                            ),
-                                          ),
-
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(8),
-                                            ),
-                                            borderSide: BorderSide(
-                                              color: Colors.red,
-                                              width: 6.0,
-                                            ),
-                                          ),
-
-                                        )
+                                        TextButton(onPressed: (){
+                                          sendOTP();
+                                        }, child: Text("Send OTP"))
+                                      ],
                                     ),
                                   ),
                              ],
@@ -199,9 +228,18 @@ class _loginUIState extends State<loginUI> {
                        Column(
                          children: [
                            ElevatedButton(
-                             onPressed: (){
+                             onPressed: () async {
                                if (_formKey.currentState!.validate()) {
-                                 loginUser();
+                                 FirebaseAuth auth = FirebaseAuth.instance;
+                                 // Create a PhoneAuthCredential with the code
+                                 PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: id, smsCode: _passCtrl.text);
+
+                                 // Sign the user in (or link) with the credential
+                                 await auth.signInWithCredential(credential);
+
+                                 Navigator.pop(context);
+                                 Navigator.pop(context);
+                                 Navigator.push(context, MaterialPageRoute(builder: (context)=>const navigationBar()));
                                }
                              },
                              style: ElevatedButton.styleFrom(
@@ -217,6 +255,7 @@ class _loginUIState extends State<loginUI> {
                            ),
                            TextButton(
                              onPressed: (){
+
                                Navigator.push(context, MaterialPageRoute(builder: (context)=>const registerUI()));
                              },
                              child: const Text(

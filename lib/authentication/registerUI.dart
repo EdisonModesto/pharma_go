@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/authentication/verificationUI.dart';
@@ -33,6 +34,19 @@ class _registerUIState extends State<registerUI> {
 
   void setProvider(){
     context.read<registerProvider>().addDetails(_numCtrl.text, _nameCtrl.text, _addressCtrl.text, _age.text, _height.text, _weight.text);
+  }
+
+  void sendOTP()async{
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: "+63${_numCtrl.text.substring(1)}",
+      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationFailed: (FirebaseAuthException e) {},
+      codeSent: (String verificationId, int? resendToken) {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> verifyUI(verificationId: verificationId,)));
+
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
   }
 
   @override
@@ -344,8 +358,9 @@ class _registerUIState extends State<registerUI> {
                           ElevatedButton(
                             onPressed: (){
                               if (_formKey.currentState!.validate()) {
+                                sendOTP();
                                 setProvider();
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>const verifyUI()));
+                                //Navigator.push(context, MaterialPageRoute(builder: (context)=>const verifyUI()));
                               }
                             },
                             style: ElevatedButton.styleFrom(
