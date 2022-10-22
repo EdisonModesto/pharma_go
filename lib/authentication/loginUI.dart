@@ -25,7 +25,7 @@ class _loginUIState extends State<loginUI> {
 
 
   void sendOTP()async{
-    
+
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: "+63${_numCtrl.text.substring(1)}",
       verificationCompleted: (PhoneAuthCredential credential) {},
