@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -112,7 +113,7 @@ class _accountAdminUIState extends State<accountAdminUI> {
                                                   )
                                               ),
                                               context: context,
-                                              builder: (context) => const accountsDetails(),
+                                              builder: (context) => accountsDetails(snap: snapshot.data!.docs[index]),
                                             );
                                           },
                                           style: ElevatedButton.styleFrom(

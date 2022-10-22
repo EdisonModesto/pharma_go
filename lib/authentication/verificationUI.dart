@@ -29,7 +29,8 @@ class _verifyUIState extends State<verifyUI> {
       "Age": context.read<registerProvider>().Age,
       "Height": context.read<registerProvider>().Height,
       "Weight": context.read<registerProvider>().Weight,
-      "isAdmin": false
+      "isAdmin": false,
+      "isVerified": false,
     });
 
     FirebaseFirestore.instance.collection('Channels').doc(FirebaseAuth.instance.currentUser!.uid).set({
