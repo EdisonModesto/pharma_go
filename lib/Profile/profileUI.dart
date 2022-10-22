@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart';
 
 import '../authentication/loginUI.dart';
 import '../my_flutter_app_icons.dart';
@@ -17,6 +22,38 @@ class profileUI extends StatefulWidget {
 }
 
 class _profileUIState extends State<profileUI> {
+
+
+  var storage = FirebaseStorage.instance;
+
+  File? _photo;
+  final ImagePicker _picker = ImagePicker();
+
+  Future imgFromGallery() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _photo = File(pickedFile.path);
+        uploadFile();
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future uploadFile() async {
+    if (_photo == null) return;
+    final fileName = basename(_photo!.path);
+    final destination = 'userID/${FirebaseAuth.instance.currentUser!.uid}';
+
+    try {
+      final ref = FirebaseStorage.instance.ref(destination).child('userID/');
+      await ref.putFile(_photo!);
+    } catch (e) {
+      print('error occured');
+    }
+  }
 
   @override
   void initState() {
@@ -178,8 +215,8 @@ class _profileUIState extends State<profileUI> {
                                   ),
                                 ),
                                 ElevatedButton(
-                                  onPressed: (){
-                                    FirebaseAuth.instance.signOut();
+                                  onPressed: () async {
+                                    imgFromGallery();
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xff219C9C),
