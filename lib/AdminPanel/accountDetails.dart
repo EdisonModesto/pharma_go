@@ -44,6 +44,7 @@ class _accountsDetailsState extends State<accountsDetails> {
             "Account Details",
             style: TextStyle(
               fontSize: 18,
+              fontWeight: FontWeight.bold
             ),
           ),
           Text(
@@ -53,7 +54,7 @@ class _accountsDetailsState extends State<accountsDetails> {
             ),
           ),
           Text(
-            "ID: ${widget.snap["isVerified"] ? "True" : "False"}",
+            "ID: ${widget.snap["isVerified"] ? "Verified" : "Not Verified"}",
             style: TextStyle(
               fontSize: 15,
             ),

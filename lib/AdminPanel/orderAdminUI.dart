@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pharma_go/AdminPanel/numberUI.dart';
+import 'package:pharma_go/AdminPanel/viewStats.dart';
 import 'package:pharma_go/Shop/addItem.dart';
 import 'package:pharma_go/AdminPanel/orderExpand.dart';
 import 'package:pharma_go/Shop/shopUI.dart';
@@ -63,10 +65,19 @@ class _orderAdminUIState extends State<orderAdminUI> {
                       ),
                       IconButton(
                         onPressed: (){
-
+                          showMaterialModalBottomSheet(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(20),
+                                    topLeft: Radius.circular(20)
+                                )
+                            ),
+                            context: context,
+                            builder: (context) => const viewStats(),
+                          );
                         },
                         icon: const Icon(
-                          MyFlutterApp.bell,
+                          Icons.insert_chart_outlined_rounded,
                           color: Color(0xff219C9C),
                         ),
                       )
@@ -93,10 +104,19 @@ class _orderAdminUIState extends State<orderAdminUI> {
                                 children: [
                                   IconButton(
                                       onPressed: (){
-                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>shopUI()));
+                                        showMaterialModalBottomSheet(
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(20),
+                                                  topLeft: Radius.circular(20)
+                                              )
+                                          ),
+                                          context: context,
+                                          builder: (context) => const numberUI(),
+                                        );
                                       },
                                       icon: const Icon(
-                                        MyFlutterApp.cart,
+                                        Icons.numbers,
                                         color: Color(0xff219C9C),
                                       )
                                   ),

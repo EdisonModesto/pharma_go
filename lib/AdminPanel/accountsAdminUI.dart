@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pharma_go/AdminPanel/viewStats.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -57,9 +58,20 @@ class _accountAdminUIState extends State<accountAdminUI> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        showMaterialModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  topLeft: Radius.circular(20)
+                              )
+                          ),
+                          context: context,
+                          builder: (context) => const viewStats(),
+                        );
+                      },
                       icon: const Icon(
-                        MyFlutterApp.bell,
+                        Icons.insert_chart_outlined_rounded,
                         color: Color(0xff219C9C),
                       ),
                     )

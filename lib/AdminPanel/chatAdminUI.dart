@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:pharma_go/AdminPanel/viewStats.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/chat/chatUI.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
@@ -52,9 +54,20 @@ class _chatAdminUIState extends State<chatAdminUI> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        showMaterialModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  topLeft: Radius.circular(20)
+                              )
+                          ),
+                          context: context,
+                          builder: (context) => const viewStats(),
+                        );
+                      },
                       icon: const Icon(
-                        MyFlutterApp.bell,
+                        Icons.insert_chart_outlined_rounded,
                         color: Color(0xff219C9C),
                       ),
                     )

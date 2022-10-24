@@ -27,6 +27,7 @@ class _checkoutUIState extends State<checkoutUI> {
   bool isBtnVis = true;
   List status = ["Awaiting Payment", "Waiting Reference No.", "Ready for pickup"];
   String ref = "Payment Required";
+  String gcash = "Loading";
 
   void listenStatus(){
     DocumentReference reference = FirebaseFirestore.instance.collection('Orders').doc(FirebaseAuth.instance.currentUser!.uid);
@@ -39,16 +40,25 @@ class _checkoutUIState extends State<checkoutUI> {
           ref = querySnapshot.get("RefID").toString();
         });
         showDialog(context: context, builder: (context){
-          return dialogUI(title: "Payment Confirmed!", body: "Your order is now confirmed and is ready for pickup. Please take a screenshot of the receipt and show it to the cashier",);
+          return const dialogUI(title: "Payment Confirmed!", body: "Your order is now confirmed and is ready for pickup. Please take a screenshot of the receipt and show it to the cashier",);
         });
         listener.cancel();
       }
     });
   }
 
+  void getGcash()async{
+    var snap = FirebaseFirestore.instance.collection("shopData").doc("data");
+    var data = await snap.get();
+    setState((){
+      gcash = data["gcash"];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getGcash();
     //listenStatus();
 
     for(int i = 0; i < widget.names.length; i++){
@@ -108,11 +118,17 @@ class _checkoutUIState extends State<checkoutUI> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            height: 150,
+                          Container(
+                            height: 165,
                             width: MediaQuery.of(context).size.width,
+                            decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                            ),
                             child: Card(
-                              color: const Color(0xffD9DEDC),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                              ),
+                              color: const Color(0xff219C9C),
                               child:
                               Padding(
                                 padding: const EdgeInsets.all(15),
@@ -123,7 +139,12 @@ class _checkoutUIState extends State<checkoutUI> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text(
-                                            "Payment"
+                                            "Payment",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontSize: 16
+                                          ),
                                         ),
 
                                         InkWell(
@@ -135,20 +156,29 @@ class _checkoutUIState extends State<checkoutUI> {
                                               pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                             );
                                           },
-                                          child: Icon(
+                                          child: const Icon(
                                             Icons.message,
                                             size: 20,
+                                            color: Colors.white,
                                           ),
                                         ),
 
 
                                       ],
                                     ),
-                                    const Text(
-                                      "GCash: 09279872019"
+                                    Text(
+                                      "GCash: $gcash",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15
+                                      ),
                                     ),
                                     Text(
-                                        "Status: ${status[stats]}"
+                                        "Status: ${status[stats]}",
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12
+                                      ),
                                     ),
                                     Visibility(
                                       visible: isBtnVis,
@@ -170,7 +200,7 @@ class _checkoutUIState extends State<checkoutUI> {
                                             print("DEBUGING : $i");
                                           }
                                           showDialog(context: context, builder: (context){
-                                            return dialogUI(title: "Payment Sent!", body: "Please wait for the seller to confirm your payment. A reference number will be available when confirmed.",);
+                                            return const dialogUI(title: "Payment Sent!", body: "Please wait for the seller to confirm your payment. A reference number will be available when confirmed.",);
                                           });
                                           listenStatus();
                                           setState(() {
@@ -178,8 +208,14 @@ class _checkoutUIState extends State<checkoutUI> {
                                             stats += 1;
                                           });
                                         },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor: Colors.black,
+                                          elevation: 0,
+                                          fixedSize: const Size(200, 10)
+                                        ),
                                         child: const Text(
-                                          "Payment Sent"
+                                          "Payment Sent",
                                         ),
                                       ),
                                     )
@@ -222,7 +258,7 @@ class _checkoutUIState extends State<checkoutUI> {
                                     ),
                                     Text(
                                       "Reference Number: ${ref}",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 12,
                                       ),
                                     ),
@@ -252,7 +288,7 @@ class _checkoutUIState extends State<checkoutUI> {
                                     ),
                                     Text(
                                       "Total: $total",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold
                                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:osm_nominatim/osm_nominatim.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
@@ -31,7 +32,6 @@ class _mapUIState extends State<mapUI> {
       nameDetails: true,
     );
 
-      print("getting places");
       searchResult.forEach((element) {
         if(mounted){
           setState(() {
@@ -44,22 +44,20 @@ class _mapUIState extends State<mapUI> {
                 )
             );
           });
-          print("MOUNTED");
         }
       });
+      print("TOTAL MARKERS: ${markers.length}");
+  }
+
+  Future<List<Marker>> sendRequests()async{
+    getPharmacies("pharmacy san fernando pampanga");
+    return markers;
   }
 
   @override
   void initState() {
     super.initState();
-    getPharmacies("pharmacy san fernando pampanga");
-    getPharmacies("pharmacy san fernando pampanga alasas");
-    getPharmacies("pharmacy san fernando pampanga baliti");
-    getPharmacies("pharmacy san fernando pampanga bulaon");
-    getPharmacies("pharmacy san fernando pampanga calulut");
-    getPharmacies("pharmacy san fernando pampanga dela paz norte");
-    getPharmacies("pharmacy san fernando pampanga del carmen");
-    getPharmacies("pharmacy san fernando pampanga");
+
   }
 
   @override
@@ -147,42 +145,51 @@ class _mapUIState extends State<mapUI> {
                                   border: Border.all(color: Colors.black, width: 6,
                                   )
                               ),
-                              child: FlutterMap(
-                                options: MapOptions(
-                                  center: latLng.LatLng(15.0284, 120.6937),
-                                  zoom: 11,
-                                ),
-                                nonRotatedChildren: [
-
-                                ],
-                                children: [
-                                  TileLayer(
-                                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                    userAgentPackageName: 'com.example.app',
-                                  ),
-
-                                  markers.isNotEmpty ? MarkerClusterLayerWidget(
-                                    options: MarkerClusterLayerOptions(
-                                      maxClusterRadius: 0,
-                                      size: const Size(40, 40),
-                                      fitBoundsOptions: const FitBoundsOptions(
-                                        padding: EdgeInsets.all(50),
+                              child: FutureBuilder(
+                                future: sendRequests(),
+                                builder: (context, snapshot){
+                                  if(snapshot.hasData){
+                                    return FlutterMap(
+                                      options: MapOptions(
+                                        center: latLng.LatLng(15.0284, 120.6937),
+                                        zoom: 11,
                                       ),
-                                      markers: markers,
-                                      polygonOptions: const PolygonOptions(
-                                          borderColor: Colors.blueAccent,
-                                          color: Colors.black12,
-                                          borderStrokeWidth: 3),
-                                      builder: (context, markers) {
-                                        return FloatingActionButton(
-                                          onPressed: null,
-                                          child: Text(markers.length.toString()),
-                                        );
-                                      },
-                                    ),
-                                  ) : Container()
-                                ],
-                              ),
+                                      nonRotatedChildren: [
+
+                                      ],
+                                      children: [
+                                        TileLayer(
+                                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                          userAgentPackageName: 'com.example.app',
+                                        ),
+
+                                        markers.isNotEmpty ? MarkerClusterLayerWidget(
+                                          options: MarkerClusterLayerOptions(
+                                            maxClusterRadius: 0,
+                                            size: const Size(40, 40),
+                                            fitBoundsOptions: const FitBoundsOptions(
+                                              padding: EdgeInsets.all(50),
+                                            ),
+                                            markers: snapshot.data!,
+                                            polygonOptions: const PolygonOptions(
+                                                borderColor: Colors.blueAccent,
+                                                color: Colors.black12,
+                                                borderStrokeWidth: 3),
+                                            builder: (context, markers) {
+                                              return FloatingActionButton(
+                                                onPressed: null,
+                                                child: Text(markers.length.toString()),
+                                              );
+                                            },
+                                          ),
+                                        ) : Container()
+                                      ],
+                                    );
+                                  } else {
+                                    return LoadingIndicator(size: 40, borderWidth: 2);
+                                  }
+                                },
+                              )
                             ),
                           ),
                         ),

@@ -107,6 +107,10 @@ class _orderExpandState extends State<orderExpand> {
 
               orderDets.doc(widget.snap).delete();
 
+              FirebaseFirestore.instance.collection("shopData").doc("data").update({
+                    "totalSales": FieldValue.increment(widget.snap1["Total"]),
+                  });
+
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(

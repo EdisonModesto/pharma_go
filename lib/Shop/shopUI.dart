@@ -124,13 +124,6 @@ class _shopUIState extends State<shopUI> {
                                     color: Color(0xff219C9C),
                                   )
                                 ),
-                                IconButton(
-                                    onPressed: (){},
-                                    icon: const Icon(
-                                      MyFlutterApp.search,
-                                      color: Color(0xff424242),
-                                    )
-                                )
                               ],
                             ),
                           )
@@ -179,31 +172,31 @@ class _shopUIState extends State<shopUI> {
                                       color: Color(0xffD9DEDC),
                                       child: Column(
                                         children: [
-                                          FutureBuilder<String>(
-                                            future: getURL(ref),
-                                            builder: (context, AsyncSnapshot<String> snapshot){
-                                              if(snapshot.hasData){
-                                                return Expanded(
-                                                  child: ClipRRect(
+                                          Expanded(
+                                            child: FutureBuilder<String>(
+                                              future: getURL(ref),
+                                              builder: (context, AsyncSnapshot<String> snapshot){
+                                                if(snapshot.hasData){
+                                                  return ClipRRect(
                                                     borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12) ),
                                                     child: Container(
                                                       width: MediaQuery.of(context).size.width,
                                                       decoration: BoxDecoration(
                                                         image: DecorationImage(
                                                           image: NetworkImage(
-                                                            "${snapshot.data}"
+                                                              "${snapshot.data}"
                                                           ),
 
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                );
-                                              } else{
-                                                return const LoadingIndicator(size: 40, borderWidth: 2);
-                                              }
-                                            },
+                                                  );
+                                                } else{
+                                                  return const LoadingIndicator(size: 40, borderWidth: 2);
+                                                }
+                                              },
+                                            ),
                                           ),
 
                                           SizedBox(

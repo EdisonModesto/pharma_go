@@ -41,7 +41,6 @@ class _medScanUIState extends State<medScanUI> {
   void _initializeCamera() async {
     var image = await _camera?.takePicture();
     _processCameraImage(image!);
-    //await _camera?.startImageStream((CameraImage image) => _processCameraImage(image));  // image processing and text recognition.
   }
 
 

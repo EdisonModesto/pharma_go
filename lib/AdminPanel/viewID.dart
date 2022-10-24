@@ -16,6 +16,7 @@ class _viewIDState extends State<viewID> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Expanded(
           child: Column(
@@ -29,9 +30,16 @@ class _viewIDState extends State<viewID> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ElevatedButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        FirebaseFirestore.instance.collection('Users').doc(widget.id).update({
+                          "isVerified": false
+                        });
+                      },
                       child: const Text(
                         "Decline ID"
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff219C9C)
                       ),
                     ),
                     ElevatedButton(
@@ -41,6 +49,9 @@ class _viewIDState extends State<viewID> {
                         });
                         Navigator.pop(context);
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xff219C9C)
+                      ),
                       child: const Text(
                           "Approve ID"
                       ),

@@ -74,6 +74,7 @@ class _addItemUIState extends State<addItemUI> {
             "Add Item to Shop",
             style: TextStyle(
               fontSize: 18,
+              fontWeight: FontWeight.bold
             ),
           ),
           Expanded(

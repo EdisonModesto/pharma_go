@@ -15,7 +15,7 @@ class notifUI extends StatefulWidget {
 
 class _notifUIState extends State<notifUI> {
 
-  CollectionReference recipes = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).collection("Reminders");
+  var recipes = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).collection("Reminders").orderBy("parsedTime");
 
 
   @override
