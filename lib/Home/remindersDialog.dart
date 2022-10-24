@@ -118,7 +118,8 @@ class _reminderDialogState extends State<reminderDialog> {
                   var collection = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).collection("Reminders").doc();
                   collection.set({
                     "Title": titleCtrl.text,
-                    "Time": "${_time.hour}: ${_time.minute}"
+                    "Time": "${_time.hour}:${_time.minute.toString().length == 1 ? ("0" + _time.minute.toString()) : _time.minute }",
+                    "parsedTime": int.parse("${_time.hour}${_time.minute}")
                   }).whenComplete((){
                     Notify.instantNotify(titleCtrl.text, "New Notification", _time);
                     Navigator.pop(context);

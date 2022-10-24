@@ -1,5 +1,8 @@
 //import 'package:camera/camera.dart';
+import 'dart:convert';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,15 +12,15 @@ import 'package:pharma_go/MedScan/medScanProvider.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/navigaton%20bar/navigation.dart';
 import 'package:provider/provider.dart';
-
+import 'package:http/http.dart' as http;
 import 'authentication/loginUI.dart';
 import 'firebase_options.dart';
 
-//late List<CameraDescription> _cameras;
+late List<CameraDescription> _cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
- // _cameras = await availableCameras();
+  _cameras = await availableCameras();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -112,16 +115,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void getJSon() async {
+     final response = await http.get(Uri.parse('https://api.npoint.io/e63a328b19e2921d7e97'));
+     var body = jsonDecode(response.body);
+     print(body);
+  }
 
   @override
   void initState() {
+    context.read<medScanProvider>().setCameras(_cameras);
     getUserInfo();
     endSplash();
-    //WidgetsBinding.instance.addPostFrameCallback((_){
-      //context.read<medScanProvider>().setCameras(_cameras);
-    //});
-
-
+    getJSon();
 
     super.initState();
   }

@@ -24,7 +24,7 @@ class homeUI extends StatefulWidget {
 
 class _homeUIState extends State<homeUI> {
 
-  CollectionReference recipes = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).collection("Reminders");
+  var recipes = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).collection("Reminders").orderBy("parsedTime");
 
   @override
   void initState() {

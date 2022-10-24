@@ -1,14 +1,19 @@
 
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
 
-
+import 'package:http/http.dart' as http;
 import '../notification/NotificationUI.dart';
 import 'medScanProvider.dart';
 
@@ -21,63 +26,62 @@ class medScanUI extends StatefulWidget {
 
 class _medScanUIState extends State<medScanUI> {
 
-/*  // Create the CameraController
+  // Create the CameraController
   late CameraController? _camera;
   late List<CameraDescription> _cameras;
+  late var body;
+  var medName = "", dosage = "", srp = "";
+  var flash = false;
 
 
   // Initializing the TextDetector
-  final textDetector = GoogleMlKit.vision.textRecognizer();
-  String recognizedText = "";*/
+  final textDetector = TextRecognizer();
+  String recognizedText = "";
 
-  /*void _initializeCamera() async {
+  void _initializeCamera() async {
+    var image = await _camera?.takePicture();
+    _processCameraImage(image!);
+    //await _camera?.startImageStream((CameraImage image) => _processCameraImage(image));  // image processing and text recognition.
+  }
 
-    await _camera?.startImageStream((CameraImage image) => _processCameraImage(image));  // image processing and text recognition.
-  }*/
 
-
-  //void _processCameraImage(CameraImage image) async {
-/*// getting InputImage from CameraImage
-    InputImage inputImage = getInputImage(image);
+  void _processCameraImage(XFile image) async {
+ // getting InputImage from CameraImage
+    InputImage inputImage = InputImage.fromFile(File(image.path));
     final RecognizedText recognisedText = await textDetector.processImage(inputImage);
 // Using the recognised text.
     for (TextBlock block in recognisedText.blocks) {
         recognizedText = block.text + " ";
+        print(recognizedText);
+        Fluttertoast.showToast(msg: "$recognizedText");
+    }
+
+    var parsedText = recognizedText.split(" ");
+    parsedText.addAll(recognizedText.split("\n"));
+    parsedText.addAll(recognizedText.split("®"));
+
+    for(int i = 0; i < body.length; i++){
+      for(int j = 0; j < parsedText.length; j++){
+        if(body.containsKey(parsedText[j].toLowerCase())){
+          print(body[parsedText[j].toLowerCase()][0]);
+          setState(() {
+            medName = body[parsedText[j].toLowerCase()][0]["generic_name"];
+            dosage =  body[parsedText[j].toLowerCase()][1]["dosage"];
+            srp =  body[parsedText[j].toLowerCase()][2]["srp"];
+          });
+          break;
+        }
+      }
     }
   }
 
-  InputImage getInputImage(CameraImage cameraImage) {
-    final WriteBuffer allBytes = WriteBuffer();
-    for (Plane plane in cameraImage.planes) {
-      allBytes.putUint8List(plane.bytes);
-    }
-    final bytes = allBytes.done().buffer.asUint8List();
-
-    final Size imageSize = Size(cameraImage.width.toDouble(), cameraImage.height.toDouble());
-
-    final InputImageRotation imageRotation = InputImageRotation.rotation0deg;
-
-    final InputImageFormat inputImageFormat = InputImageFormatValue.fromRawValue(cameraImage.format.raw) ?? InputImageFormat.nv21;
-
-    final planeData = cameraImage.planes.map(
-          (Plane plane) {
-        return InputImagePlaneMetadata(
-          bytesPerRow: plane.bytesPerRow,
-          height: plane.height,
-          width: plane.width,
-        );
-      },
-    ).toList();
-
-    final inputImageData = InputImageData(
-      size: imageSize,
-      imageRotation: imageRotation,
-      inputImageFormat: inputImageFormat,
-      planeData: planeData,
-    );
-
-    return InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
+  void getJSon() async {
+    final response = await http.get(Uri.parse('https://api.npoint.io/e63a328b19e2921d7e97'));
+    body = jsonDecode(response.body);
+    Fluttertoast.showToast(msg: "${body["biogesic"][0]}");
+    print(body);
   }
+
 
   void setupCam(){
     _camera?.initialize().then((_) {
@@ -85,7 +89,7 @@ class _medScanUIState extends State<medScanUI> {
         return;
       }
       _initializeCamera();
-    //  setState(() {});
+      setState(() {});
     }).catchError((Object e) {
       if (e is CameraException) {
         switch (e.code) {
@@ -113,18 +117,19 @@ class _medScanUIState extends State<medScanUI> {
     } else if (state == AppLifecycleState.resumed) {
 
     }
-  }*/
+  }
 
 
   @override
   void initState() {
     super.initState();
 
-    /*_cameras =  context.read<medScanProvider>().cameras;
-    _camera = CameraController(_cameras[0], ResolutionPreset.medium, imageFormatGroup: ImageFormatGroup.yuv420);
+    _cameras =  context.read<medScanProvider>().cameras;
+    _camera = CameraController(_cameras[0], ResolutionPreset.ultraHigh, imageFormatGroup: ImageFormatGroup.yuv420);
+    getJSon();
     WidgetsBinding.instance.addPostFrameCallback((_)async{
       setupCam();
-    });*/
+    });
   }
 
 
@@ -201,7 +206,13 @@ class _medScanUIState extends State<medScanUI> {
                               ),
                             ),
                             IconButton(
-                                onPressed: (){},
+                                onPressed: (){
+                                  if(flash){
+                                    _camera!.setFlashMode(FlashMode.off);
+                                  } else{
+                                    _camera!.setFlashMode(FlashMode.torch);
+                                  }
+                                },
                                 icon: const Icon(
                                   MyFlutterApp.flash,
                                   color: Color(0xff424242),
@@ -221,17 +232,17 @@ class _medScanUIState extends State<medScanUI> {
                                     border: Border.all(color: Colors.black, width: 8,
                                     )
                                   ),
-                                  child:// !_camera!.value.isInitialized ?
+                                  child: !_camera!.value.isInitialized ?
                                   Container(
                                     child: Center(
                                       child: Text(
                                         "Camera Permission Required"
                                       ),
                                     ),
-                                  )
-                                 /* CameraPreview(
+                                  ) :
+                                  CameraPreview(
                                     _camera!,
-                                  ),*/
+                                  ),
                                 ),
                               ],
                             )
@@ -253,17 +264,18 @@ class _medScanUIState extends State<medScanUI> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          "Medicine Name: "
+                                          "Medicine Name: $medName"
                                         ),
                                         Text(
-                                            "Dosage: "
+                                            "Dosage: $dosage"
                                         ),
                                         Text(
-                                            "SRP: "
+                                            "SRP: $srp"
                                         ),
                                         Center(
                                           child: ElevatedButton(
                                             onPressed: (){
+                                              _initializeCamera();
                                               setState(() {});
                                             },
                                             style: ElevatedButton.styleFrom(

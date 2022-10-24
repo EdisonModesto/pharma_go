@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:text_to_speech/text_to_speech.dart';
 import '../my_flutter_app_icons.dart';
 
 class speechUI extends StatefulWidget {
@@ -13,6 +16,7 @@ class speechUI extends StatefulWidget {
 }
 
 class _speechUIState extends State<speechUI> {
+  CollectionReference reminders = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).collection("Reminders");
 
   SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
@@ -39,13 +43,20 @@ class _speechUIState extends State<speechUI> {
     setState(() {});
   }
 
-  void _onSpeechResult(SpeechRecognitionResult result) {
+  void _onSpeechResult(SpeechRecognitionResult result) async{
     setState(() {
       _lastWords = result.recognizedWords;
     });
+    TextToSpeech tts = TextToSpeech();
+    if(_lastWords.contains("what time do i take another pill")){
+      print("RECOGNIZED");
+      var snap = await reminders.orderBy("parsedTime").get();
+      var title = snap.docs.elementAt(0)["Title"];
+      var time = snap.docs.elementAt(0)["Time"];
 
-    if(_lastWords.contains("shop")){
-      Fluttertoast.showToast(msg: "Redirecting to shop");
+      tts.speak("Your next scheduled reminder is at $time with a title of $title");
+    } else if(_lastWords.contains("how much is this certain medicine")){
+      tts.speak("This medicine has a price of x pesos");
     }
 
   }
