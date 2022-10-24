@@ -30,7 +30,7 @@ class _viewIDState extends State<viewID> {
                   children: [
                     ElevatedButton(
                       onPressed: (){},
-                      child: Text(
+                      child: const Text(
                         "Decline ID"
                       ),
                     ),
@@ -41,7 +41,7 @@ class _viewIDState extends State<viewID> {
                         });
                         Navigator.pop(context);
                       },
-                      child: Text(
+                      child: const Text(
                           "Approve ID"
                       ),
                     )

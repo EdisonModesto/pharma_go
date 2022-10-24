@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -26,6 +27,12 @@ class _cartListState extends State<cartList> {
   getFunc(snap)async{
     var item = await shop.doc(snap).get();
     return item.data();
+  }
+
+  Future<String> getURL(var ref)async{
+
+    String url = await ref.getDownloadURL();
+    return url;
   }
 
   @override
@@ -87,8 +94,6 @@ class _cartListState extends State<cartList> {
                           builder: (context,snapshot1) {
                             name.add(snapshot1.data!["Heading"]);
                             price.add(snapshot1.data!["Price"]);
-                            print("DEBUGING: $name");
-                            print("DEBUGING: $price");
                             return ClipRRect(
                               borderRadius: BorderRadius.all(Radius.circular(12)),
                               child: ElevatedButton(
@@ -115,18 +120,27 @@ class _cartListState extends State<cartList> {
                                       Expanded(
                                         child: ClipRRect(
                                           borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12) ),
-                                          child: Container(
-                                            width: MediaQuery.of(context).size.width,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.red,
-                                              image: DecorationImage(
-                                                image: NetworkImage(
-                                                    "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1179&q=80"
-                                                ),
+                                          child: FutureBuilder(
+                                            future: getURL(FirebaseStorage.instance.ref("shopImages/${snapshot1.data!.id}").child('itemImage/')),
+                                            builder: (context, strSnap){
+                                              if(strSnap.hasData){
+                                                return Container(
+                                                  width: MediaQuery.of(context).size.width,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          "${strSnap.data}"
+                                                      ),
 
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else{
+                                                return LoadingIndicator(size: 40, borderWidth: 2);
+                                              }
+                                            },
                                           ),
                                         ),
                                       ),

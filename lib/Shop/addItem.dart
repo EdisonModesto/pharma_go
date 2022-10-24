@@ -1,5 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+
 
 class addItemUI extends StatefulWidget {
   const addItemUI({Key? key}) : super(key: key);
@@ -15,6 +22,36 @@ class _addItemUIState extends State<addItemUI> {
   TextEditingController priceCtrl = TextEditingController();
   TextEditingController stocksCtrl = TextEditingController();
   TextEditingController descCtrl = TextEditingController();
+
+  var storage = FirebaseStorage.instance;
+
+  File? _photo;
+  final ImagePicker _picker = ImagePicker();
+
+  Future imgFromGallery() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _photo = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future uploadFile(var id) async {
+    if (_photo == null) return;
+    final fileName = basename(_photo!.path);
+    final destination = 'shopImages/${id}';
+
+    try {
+      final ref = FirebaseStorage.instance.ref(destination).child('itemImage/');
+      await ref.putFile(_photo!);
+    } catch (e) {
+      print('error occured');
+    }
+  }
 
   @override
   void dispose() {
@@ -174,9 +211,9 @@ class _addItemUIState extends State<addItemUI> {
                       ],
                     ),
                     SizedBox(
-                      height: 300,
+                      height: 150,
                       child: TextFormField(
-                        controller: descCtrl,
+                          controller: descCtrl,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -213,15 +250,48 @@ class _addItemUIState extends State<addItemUI> {
                           )
                       ),
                     ),
+                    Container(
+                      height: 150,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xff219C9C), width: 2),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(8),
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: _photo == null ?
+                            ElevatedButton(
+                                onPressed: (){
+                                  imgFromGallery();
+                                },
+                                child: Text(
+                                    "Upload Image"
+                                )
+                            ) :
+                            Image.file(
+                              _photo!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      )
+                    ),
                     ElevatedButton(
                       onPressed: (){
                         if (_formKey.currentState!.validate()) {
-                          var collection = FirebaseFirestore.instance.collection('Shop');
-                          collection.doc().set({
+                          var collection = FirebaseFirestore.instance.collection('Shop').doc();
+                          collection.set({
                             "Heading": nameCtrl.text,
                             "Price": priceCtrl.text,
                             "Stock": stocksCtrl.text,
                             "Description": descCtrl.text
+                          }).whenComplete(() async {
+                            var docSnap = await collection.get();
+                            var doc_id = docSnap.reference.id;
+                            uploadFile(doc_id);
                           });
                         }
                       },

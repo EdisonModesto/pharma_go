@@ -4,6 +4,8 @@ import 'package:day_night_time_picker/lib/state/time.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../notification/Notify.dart';
+
 class reminderDialog extends StatefulWidget {
   const reminderDialog({Key? key}) : super(key: key);
 
@@ -118,6 +120,7 @@ class _reminderDialogState extends State<reminderDialog> {
                     "Title": titleCtrl.text,
                     "Time": "${_time.hour}: ${_time.minute}"
                   }).whenComplete((){
+                    Notify.instantNotify(titleCtrl.text, "New Notification", _time);
                     Navigator.pop(context);
                   });
                 }

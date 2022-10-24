@@ -6,6 +6,7 @@ import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pharma_go/Shop/addItem.dart';
 import 'package:pharma_go/AdminPanel/orderExpand.dart';
+import 'package:pharma_go/Shop/shopUI.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/my_flutter_app_icons.dart';
 import 'package:provider/provider.dart';
@@ -62,8 +63,7 @@ class _orderAdminUIState extends State<orderAdminUI> {
                       ),
                       IconButton(
                         onPressed: (){
-                          print("HELLO");
-                          Notify.instantNotify("This is a title", " This is a body");
+
                         },
                         icon: const Icon(
                           MyFlutterApp.bell,
@@ -93,7 +93,7 @@ class _orderAdminUIState extends State<orderAdminUI> {
                                 children: [
                                   IconButton(
                                       onPressed: (){
-
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>shopUI()));
                                       },
                                       icon: const Icon(
                                         MyFlutterApp.cart,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -23,6 +24,11 @@ class _shopUIState extends State<shopUI> {
 
   CollectionReference shop = FirebaseFirestore.instance.collection('Shop');
 
+  Future<String> getURL(var ref)async{
+
+    String url = await ref.getDownloadURL();
+    return url;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +155,7 @@ class _shopUIState extends State<shopUI> {
                               crossAxisSpacing: 30,
                               mainAxisSpacing: 20,
                               children: List.generate(snapshot.data!.docs.length, (index) {
+                                late var ref = FirebaseStorage.instance.ref("shopImages/${snapshot.data?.docs[index].id}").child('itemImage/');
                                 return ClipRRect(
                                   borderRadius: BorderRadius.all(Radius.circular(12)),
                                   child: ElevatedButton(
@@ -172,23 +179,31 @@ class _shopUIState extends State<shopUI> {
                                       color: Color(0xffD9DEDC),
                                       child: Column(
                                         children: [
-                                          Expanded(
-                                            child: ClipRRect(
-                                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12) ),
-                                              child: Container(
-                                                width: MediaQuery.of(context).size.width,
-                                                decoration: const BoxDecoration(
-                                                  color: Colors.red,
-                                                  image: DecorationImage(
-                                                    image: NetworkImage(
-                                                        "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1179&q=80"
-                                                    ),
+                                          FutureBuilder<String>(
+                                            future: getURL(ref),
+                                            builder: (context, AsyncSnapshot<String> snapshot){
+                                              if(snapshot.hasData){
+                                                return Expanded(
+                                                  child: ClipRRect(
+                                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12) ),
+                                                    child: Container(
+                                                      width: MediaQuery.of(context).size.width,
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(
+                                                            "${snapshot.data}"
+                                                          ),
 
-                                                    fit: BoxFit.cover,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                            ),
+                                                );
+                                              } else{
+                                                return const LoadingIndicator(size: 40, borderWidth: 2);
+                                              }
+                                            },
                                           ),
 
                                           SizedBox(

@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,13 @@ class expandItem extends StatefulWidget {
 }
 
 class _expandItemState extends State<expandItem> {
+
+  Future<String> getURL(var ref)async{
+
+    String url = await ref.getDownloadURL();
+    return url;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,19 +38,28 @@ class _expandItemState extends State<expandItem> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 200,
-            decoration: const BoxDecoration(
-              color: Colors.red,
-              image: DecorationImage(
-                image: NetworkImage(
-                    "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1179&q=80"
-                ),
+          FutureBuilder<String>(
+            future: getURL(FirebaseStorage.instance.ref("shopImages/${widget.id}").child('itemImage/')),
+            builder: (context,  AsyncSnapshot<String> snapshot){
+              if(snapshot.hasData){
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    image: DecorationImage(
+                      image: NetworkImage(
+                       "${snapshot.data}",
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
+              }else{
+                return const LoadingIndicator(size: 40, borderWidth: 2);
 
-                fit: BoxFit.cover,
-              ),
-            ),
+              }
+            },
           ),
           Container(
             width: MediaQuery.of(context).size.width,

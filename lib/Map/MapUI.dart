@@ -21,10 +21,10 @@ class mapUI extends StatefulWidget {
 class _mapUIState extends State<mapUI> {
   List<Marker> markers = [];
 
-  getPharmacies()async{
+  getPharmacies(String searchKey)async{
 
     final searchResult = await Nominatim.searchByName(
-      query: 'pharmacy san fernando pampanga',
+      query: searchKey,
       limit: 50,
       addressDetails: true,
       extraTags: true,
@@ -33,7 +33,6 @@ class _mapUIState extends State<mapUI> {
 
       print("getting places");
       searchResult.forEach((element) {
-
         if(mounted){
           setState(() {
             markers.add(
@@ -53,7 +52,14 @@ class _mapUIState extends State<mapUI> {
   @override
   void initState() {
     super.initState();
-    getPharmacies();
+    getPharmacies("pharmacy san fernando pampanga");
+    getPharmacies("pharmacy san fernando pampanga alasas");
+    getPharmacies("pharmacy san fernando pampanga baliti");
+    getPharmacies("pharmacy san fernando pampanga bulaon");
+    getPharmacies("pharmacy san fernando pampanga calulut");
+    getPharmacies("pharmacy san fernando pampanga dela paz norte");
+    getPharmacies("pharmacy san fernando pampanga del carmen");
+    getPharmacies("pharmacy san fernando pampanga");
   }
 
   @override

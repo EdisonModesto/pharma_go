@@ -24,8 +24,6 @@ class _accountsDetailsState extends State<accountsDetails> {
 
   @override
   void initState() {
-    //ref = FirebaseStorage.instance.ref("userID/${widget.snap.id}").child('userID/');
-    //initCloud();
     WidgetsBinding.instance.addPostFrameCallback((_) {
         initCloud();
     });
@@ -54,8 +52,8 @@ class _accountsDetailsState extends State<accountsDetails> {
               fontSize: 15,
             ),
           ),
-          const Text(
-            "ID: False",
+          Text(
+            "ID: ${widget.snap["isVerified"] ? "True" : "False"}",
             style: TextStyle(
               fontSize: 15,
             ),
