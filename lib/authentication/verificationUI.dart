@@ -33,10 +33,13 @@ class _verifyUIState extends State<verifyUI> {
       "isVerified": false,
     });
 
+    DateTime startDate = new DateTime.now().toLocal();
+
     FirebaseFirestore.instance.collection('Channels').doc(FirebaseAuth.instance.currentUser!.uid).set({
       "Name": context.read<registerProvider>().Name,
       "Mobile": context.read<registerProvider>().Number,
       "Address": context.read<registerProvider>().Address,
+      "lastUpdate": startDate
     });
   }
 

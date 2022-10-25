@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pharma_go/MedScan/medScanUI.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_to_text.dart';
@@ -56,7 +57,8 @@ class _speechUIState extends State<speechUI> {
 
       tts.speak("Your next scheduled reminder is at $time with a title of $title");
     } else if(_lastWords.contains("how much is this certain medicine")){
-      tts.speak("This medicine has a price of x pesos");
+      tts.speak("Opening Medicine Scanner");
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>medScanUI()));
     }
 
   }

@@ -22,7 +22,7 @@ class checkoutUI extends StatefulWidget {
 class _checkoutUIState extends State<checkoutUI> {
 
 
-  int total = 0;
+  double total = 0;
   int stats = 0;
   bool isBtnVis = true;
   List status = ["Awaiting Payment", "Waiting Reference No.", "Ready for pickup"];
@@ -55,15 +55,27 @@ class _checkoutUIState extends State<checkoutUI> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getGcash();
-    //listenStatus();
+  calcPrice()async{
+    var doc = FirebaseFirestore.instance.collection("Users").doc(FirebaseAuth.instance.currentUser!.uid);
+    var snap = await doc.get();
+    var isVerified = snap["isVerified"];
 
     for(int i = 0; i < widget.names.length; i++){
       total += int.parse(widget.prices[i]);
     }
+    if(isVerified){
+      total = total - (0.20 * total);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getGcash();
+    calcPrice();
+    //listenStatus();
+
+
   }
 
   @override

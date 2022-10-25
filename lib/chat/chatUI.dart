@@ -32,10 +32,35 @@ class _chatUIState extends State<chatUI> {
     msgCtrl.dispose();
   }
 
+  void checkAutoMsg()async{
+    var docu = FirebaseFirestore.instance.collection("Channels").doc(widget.channelID);
+    DateTime startDate = new DateTime.now().toLocal();
+    var snap = await docu.get();
+    int offset = await NTP.getNtpOffset(localTime: startDate);
+    startDate.add(Duration(milliseconds: offset));
+
+
+    var diff = startDate.difference(snap["lastUpdate"].toDate()).inMinutes;
+    print(startDate.difference(snap["lastUpdate"].toDate()).inMinutes);
+    
+    if(diff > 15){
+      print("AUTOREPLY SENT");
+      messages.add({
+        "message": "Hello! Thanks for visiting PharmaGo, we will be with you in just a moment.",
+        "user": "AutoReplyBot",
+        "time": startDate.add(Duration(milliseconds: offset))
+      });
+      var snap = FirebaseFirestore.instance.collection("Channels").doc(widget.channelID).update({
+        "lastUpdate": startDate.add(Duration(milliseconds: offset)),
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     messages = messages.doc(widget.channelID).collection("Messages");
+    checkAutoMsg();
   }
 
   @override
@@ -178,6 +203,10 @@ class _chatUIState extends State<chatUI> {
                                 "user": FirebaseAuth.instance.currentUser?.uid,
                                 "time": startDate.add(Duration(milliseconds: offset))
                               });
+                              var snap = FirebaseFirestore.instance.collection("Channels").doc(widget.channelID).update({
+                                "lastUpdate": startDate.add(Duration(milliseconds: offset)),
+                              });
+
                             },
                             icon: const Icon(Icons.send),
                           )

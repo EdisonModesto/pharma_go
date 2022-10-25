@@ -16,7 +16,7 @@
         </intent>
     </queries>
     <application
-        android:label="pharma_go"
+        android:label="PharmaGo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

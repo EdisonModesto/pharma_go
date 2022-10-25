@@ -19,7 +19,7 @@ class chatAdminUI extends StatefulWidget {
 class _chatAdminUIState extends State<chatAdminUI> {
 
 
-  CollectionReference channels = FirebaseFirestore.instance.collection('Channels');
+  var channels = FirebaseFirestore.instance.collection('Channels').orderBy("lastUpdate", descending: true);
 
   @override
   Widget build(BuildContext context) {
@@ -148,12 +148,12 @@ class _chatAdminUIState extends State<chatAdminUI> {
                                                   children: [
                                                     Text(
                                                       snapshot.data!.docs[index]["Name"],
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontSize: 16,
                                                         color: Color(0xff424242),
                                                       ),
                                                     ),
-                                                    Text(
+                                                    const Text(
                                                       "Previous Message",
                                                       style: TextStyle(
                                                           fontSize: 12,
