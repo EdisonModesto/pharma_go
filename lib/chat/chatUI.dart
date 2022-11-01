@@ -1,11 +1,19 @@
+
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
-
+import 'package:path/path.dart' as path;
+import '../AdminPanel/viewReseta.dart';
 import '../Home/viewDialog.dart';
 import '../authentication/registerProvider.dart';
 import '../my_flutter_app_icons.dart';
@@ -25,6 +33,48 @@ class _chatUIState extends State<chatUI> {
   CollectionReference messages = FirebaseFirestore.instance.collection('Channels');
 
   TextEditingController msgCtrl = TextEditingController();
+
+
+
+  var storage = FirebaseStorage.instance;
+
+  File? _photo;
+  final ImagePicker _picker = ImagePicker();
+
+  Future imgFromGallery() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _photo = File(pickedFile.path);
+        uploadFile();
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future uploadFile() async {
+    if (_photo == null) return;
+    final fileName = path.basename(_photo!.path);
+    final destination = 'userReseta/${FirebaseAuth.instance.currentUser!.uid}';
+
+    try {
+      final ref = FirebaseStorage.instance.ref(destination).child('userReseta/');
+      await ref.putFile(_photo!);
+      Fluttertoast.showToast(msg: "Your reseta has been uploaded!");
+    } catch (e) {
+      print('error occured');
+    }
+  }
+
+  late var ref = FirebaseStorage.instance.ref("userReseta/${widget.channelID}").child('userReseta/');
+  late var url = "";
+
+  void initCloud()async{
+    url = await ref.getDownloadURL();
+    setState((){});
+  }
 
   @override
   void dispose() {
@@ -60,6 +110,7 @@ class _chatUIState extends State<chatUI> {
   void initState() {
     super.initState();
     messages = messages.doc(widget.channelID).collection("Messages");
+    initCloud();
     checkAutoMsg();
   }
 
@@ -109,6 +160,30 @@ class _chatUIState extends State<chatUI> {
                               ],
                             ),
                           ),
+
+                          widget.Name == context.watch<registerProvider>().Name ?
+                          SizedBox(
+                            child: IconButton(
+                              onPressed: (){
+                                imgFromGallery();
+                              },
+                              icon:Icon(Icons.upload) ,
+                            ),
+                          )
+                          :
+                          SizedBox(
+                            child: IconButton(
+                              onPressed: (){
+                                if(url.isNotEmpty){
+                                  Navigator.push(context, MaterialPageRoute(builder: (builder)=>viewReseta(url: url, id: widget.channelID)));
+                                }else{
+                                  Fluttertoast.showToast(msg: "User has no uploaded reseta");
+                                }
+
+                              },
+                              icon:Icon(Icons.receipt) ,
+                            ),
+                          )
                         ],
                       ),
                     ),

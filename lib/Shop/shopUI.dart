@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:pharma_go/Shop/cartList.dart';
 import 'package:pharma_go/Shop/expandItem.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +14,7 @@ import '../authentication/registerProvider.dart';
 import '../my_flutter_app_icons.dart';
 import '../notification/NotificationUI.dart';
 import '../speechRecognition/speechFAB.dart';
+import 'checkout/checkoutUI.dart';
 
 class shopUI extends StatefulWidget {
   const shopUI({Key? key}) : super(key: key);
@@ -106,6 +109,44 @@ class _shopUIState extends State<shopUI> {
                           Container(
                             child: Row(
                               children: [
+                                IconButton(
+                                    onPressed: ()async{
+                                      List name = [];
+                                      List price = [];
+                                      var collec;
+                                      collec = await FirebaseFirestore.instance.collection("Orders").doc(FirebaseAuth.instance.currentUser!.uid).get().then((value)async{
+                                        if(value.exists){
+                                          var docum = await FirebaseFirestore.instance.collection("Orders").doc(FirebaseAuth.instance.currentUser!.uid).collection("items").snapshots();
+                                          docum.forEach((element) {
+                                            element.docs.forEach((element1) {
+                                              name.add(element1.data()["itemName"]);
+                                              price.add(element1.data()["itemPrice"]);
+                                              print(element1.data()["itemName"]);
+                                              print(element1.data()["itemPrice"]);
+                                            });
+                                          });
+
+
+                                          //print(docum!["Buyer"]);
+
+
+
+                                          PersistentNavBarNavigator.pushNewScreen(
+                                            context,
+                                            screen: checkoutUI(names: name, prices: price,),
+                                            withNavBar: true, // OPTIONAL VALUE. True by default.
+                                            pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                          );
+                                        }else{
+                                          Fluttertoast.showToast(msg: "You have no pending orders");
+                                        }
+                                      });
+                                    },
+                                    icon: const Icon(
+                                      Icons.book,
+                                      color: Color(0xff414141),
+                                    )
+                                ),
                                 IconButton(
                                   onPressed: (){
                                     showMaterialModalBottomSheet(

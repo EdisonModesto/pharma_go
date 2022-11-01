@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pharma_go/authentication/loginUI.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/authentication/verificationUI.dart';
 import 'package:provider/provider.dart';
@@ -194,7 +195,7 @@ class _registerUIState extends State<registerUI> {
                                     ),
                                     decoration: const InputDecoration(
                                       errorStyle: TextStyle(height: 0),
-                                      label: Text("Adress"),
+                                      label: Text("Address"),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(8),
@@ -376,7 +377,7 @@ class _registerUIState extends State<registerUI> {
                           ),
                           TextButton(
                             onPressed: (){
-                              Navigator.pop(context);
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>loginUI()));
                             },
                             child: const Text(
                                 "Already have an account? Login"

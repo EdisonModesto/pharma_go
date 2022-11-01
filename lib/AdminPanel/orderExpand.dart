@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:pharma_go/AdminPanel/viewReseta.dart';
 import 'package:random_string/random_string.dart';
 
 import '../my_flutter_app_icons.dart';
@@ -38,7 +40,7 @@ class _orderExpandState extends State<orderExpand> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "${widget.snap1["Buyer"]} Order",
+                "${widget.snap1["Buyer"]}'s Order",
                 style: TextStyle(
                   fontSize: 18,
                 ),

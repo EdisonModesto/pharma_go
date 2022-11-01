@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:pharma_go/Home/homeUI.dart';
 import 'package:pharma_go/MedScan/medScanProvider.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
+import 'package:pharma_go/authentication/registerUI.dart';
 import 'package:pharma_go/navigaton%20bar/navigation.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -93,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await Future.delayed(Duration(seconds: 3));
     FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user == null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>const loginUI()));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>const registerUI()));
       } else {
         Navigator.push(context, MaterialPageRoute(builder: (context)=> navigationBar()));
 

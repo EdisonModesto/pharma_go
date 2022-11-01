@@ -111,7 +111,7 @@ class _loginUIState extends State<loginUI> {
                        Form(
                          key: _formKey,
                          child: SizedBox(
-                           height: 175,
+                           height: 225,
                            child: Column(
                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                              children: [
@@ -170,57 +170,50 @@ class _loginUIState extends State<loginUI> {
                                   ),
                                SizedBox(
                                     height: 55,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(
-                                          width: 250,
-                                          child: TextFormField(
-                                            obscureText: true,
-                                            controller: _passCtrl,
-                                            keyboardType: TextInputType.number,
-                                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                                              validator: (value) {
-                                                if (value == null || value.isEmpty) {
-                                                  return '';
-                                                }
-                                                return null;
-                                              },
-                                              style: const TextStyle(
-                                                  fontSize: 14
-                                              ),
-                                              decoration: const InputDecoration(
-                                                label: Text("OTP"),
-                                                errorStyle: TextStyle(height: 0),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.all(
-                                                    Radius.circular(8),
-                                                  ),
-                                                  borderSide: BorderSide(
-                                                    color: Color(0xff219C9C),
-                                                    width: 2.0,
-                                                  ),
-                                                ),
-
-                                                border: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.all(
-                                                    Radius.circular(8),
-                                                  ),
-                                                  borderSide: BorderSide(
-                                                    color: Colors.red,
-                                                    width: 6.0,
-                                                  ),
-                                                ),
-
-                                              )
-                                          ),
+                                    child: TextFormField(
+                                      obscureText: true,
+                                      controller: _passCtrl,
+                                      keyboardType: TextInputType.number,
+                                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return '';
+                                          }
+                                          return null;
+                                        },
+                                        style: const TextStyle(
+                                            fontSize: 14
                                         ),
-                                        TextButton(onPressed: (){
-                                          sendOTP();
-                                        }, child: Text("Send OTP"))
-                                      ],
+                                        decoration: const InputDecoration(
+                                          label: Text("OTP"),
+                                          errorStyle: TextStyle(height: 0),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(8),
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: Color(0xff219C9C),
+                                              width: 2.0,
+                                            ),
+                                          ),
+
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(8),
+                                            ),
+                                            borderSide: BorderSide(
+                                              color: Colors.red,
+                                              width: 6.0,
+                                            ),
+                                          ),
+
+                                        )
                                     ),
+
                                   ),
+                               TextButton(onPressed: (){
+                                 sendOTP();
+                               }, child: Text("Send OTP"))
                              ],
                            ),
                          ),
@@ -256,7 +249,7 @@ class _loginUIState extends State<loginUI> {
                            TextButton(
                              onPressed: (){
 
-                               Navigator.push(context, MaterialPageRoute(builder: (context)=>const registerUI()));
+                               Navigator.pop(context);
                              },
                              child: const Text(
                                "Don't have an account? Register"

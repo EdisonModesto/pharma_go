@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
-
+import 'package:path/path.dart' as path;
 import '../../authentication/registerProvider.dart';
 import '../../chat/chatUI.dart';
 import '../../my_flutter_app_icons.dart';
@@ -43,6 +48,11 @@ class _checkoutUIState extends State<checkoutUI> {
           return const dialogUI(title: "Payment Confirmed!", body: "Your order is now confirmed and is ready for pickup. Please take a screenshot of the receipt and show it to the cashier",);
         });
         listener.cancel();
+      } else if(querySnapshot.get("Status") == "For Validation"){
+        setState((){
+          isBtnVis = false;
+          stats +=1;
+        });
       }
     });
   }
@@ -71,11 +81,10 @@ class _checkoutUIState extends State<checkoutUI> {
   @override
   void initState() {
     super.initState();
+    listenStatus();
     getGcash();
     calcPrice();
     //listenStatus();
-
-
   }
 
   @override
@@ -215,10 +224,6 @@ class _checkoutUIState extends State<checkoutUI> {
                                             return const dialogUI(title: "Payment Sent!", body: "Please wait for the seller to confirm your payment. A reference number will be available when confirmed.",);
                                           });
                                           listenStatus();
-                                          setState(() {
-                                            isBtnVis = false;
-                                            stats += 1;
-                                          });
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.white,

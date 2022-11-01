@@ -52,7 +52,6 @@ class _medScanUIState extends State<medScanUI> {
     for (TextBlock block in recognisedText.blocks) {
         recognizedText = block.text + " ";
         print(recognizedText);
-        Fluttertoast.showToast(msg: "$recognizedText");
     }
 
     var parsedText = recognizedText.split(" ");
@@ -77,7 +76,6 @@ class _medScanUIState extends State<medScanUI> {
   void getJSon() async {
     final response = await http.get(Uri.parse('https://api.npoint.io/e63a328b19e2921d7e97'));
     body = jsonDecode(response.body);
-    Fluttertoast.showToast(msg: "${body["biogesic"][0]}");
     print(body);
   }
 
