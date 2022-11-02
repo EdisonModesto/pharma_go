@@ -14,6 +14,7 @@ import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:string_similarity/string_similarity.dart';
 import '../notification/NotificationUI.dart';
 import 'medScanProvider.dart';
 
@@ -30,6 +31,8 @@ class _medScanUIState extends State<medScanUI> {
   late CameraController? _camera;
   late List<CameraDescription> _cameras;
   late var body;
+  late Map responseMap;
+  late List<String> KeyList = [];
   var medName = "", dosage = "", srp = "";
   var flash = false;
 
@@ -60,12 +63,15 @@ class _medScanUIState extends State<medScanUI> {
 
     for(int i = 0; i < body.length; i++){
       for(int j = 0; j < parsedText.length; j++){
-        if(body.containsKey(parsedText[j].toLowerCase())){
-          print(body[parsedText[j].toLowerCase()][0]);
+        double? rating = StringSimilarity.findBestMatch(parsedText[j].toLowerCase(), KeyList).bestMatch.rating;
+        String? matchedKey = StringSimilarity.findBestMatch(parsedText[j].toLowerCase(), KeyList).bestMatch.target;
+        print("BEST MATCH IS $rating");
+
+        if(rating! <= 3.0 && rating! != 0){
           setState(() {
-            medName = body[parsedText[j].toLowerCase()][0]["generic_name"];
-            dosage =  body[parsedText[j].toLowerCase()][1]["dosage"];
-            srp =  body[parsedText[j].toLowerCase()][2]["srp"];
+            medName = body[matchedKey][0]["generic_name"];
+            dosage =  body[matchedKey][1]["dosage"];
+            srp =  body[matchedKey][2]["srp"];
           });
           break;
         }
@@ -76,7 +82,12 @@ class _medScanUIState extends State<medScanUI> {
   void getJSon() async {
     final response = await http.get(Uri.parse('https://api.npoint.io/e63a328b19e2921d7e97'));
     body = jsonDecode(response.body);
-    print(body);
+    responseMap = body;
+
+    responseMap.forEach((key, value) {
+      KeyList.add(key);
+    });
+    print(KeyList);
   }
 
 

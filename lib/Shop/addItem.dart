@@ -29,7 +29,7 @@ class _addItemUIState extends State<addItemUI> {
   final ImagePicker _picker = ImagePicker();
 
   Future imgFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedFile != null) {
