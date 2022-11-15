@@ -10,7 +10,7 @@ class Notify{
     id: Random().nextInt(100),
     title: "$Title",
     body: "$Body",
-    channelKey: "basic_channel"
+    channelKey: "basic_channel",
   ),
       schedule: NotificationCalendar(hour: date.hour, minute: date.minute, repeats: true)
     );

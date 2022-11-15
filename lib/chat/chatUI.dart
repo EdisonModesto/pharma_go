@@ -281,7 +281,7 @@ class _chatUIState extends State<chatUI> {
                               var snap = FirebaseFirestore.instance.collection("Channels").doc(widget.channelID).update({
                                 "lastUpdate": startDate.add(Duration(milliseconds: offset)),
                               });
-
+                              msgCtrl.text = "";
                             },
                             icon: const Icon(Icons.send),
                           )

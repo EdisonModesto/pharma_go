@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:osm_nominatim/osm_nominatim.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
@@ -79,7 +81,7 @@ class _mapUIState extends State<mapUI> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(right: 15),
+                            margin: const EdgeInsets.only(right: 15),
                             width: 40,
                             child: Hero(
                               tag: "logo",
@@ -89,7 +91,7 @@ class _mapUIState extends State<mapUI> {
                           ),
                           Text(
                             "Welcome ${context.watch<registerProvider>().Name.split(" ")[0]}",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16
                             ),
                           )
@@ -162,11 +164,24 @@ class _mapUIState extends State<mapUI> {
                                           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                                           userAgentPackageName: 'com.example.app',
                                         ),
-
+                                        CurrentLocationLayer(
+                                          centerOnLocationUpdate: CenterOnLocationUpdate.always,
+                                          turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
+                                          style: const LocationMarkerStyle(
+                                            marker: DefaultLocationMarker(
+                                              child: Icon(
+                                                Icons.navigation,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            markerSize: Size(40, 40),
+                                            markerDirection: MarkerDirection.heading,
+                                          ),
+                                        ),
                                         markers.isNotEmpty ? MarkerClusterLayerWidget(
                                           options: MarkerClusterLayerOptions(
                                             maxClusterRadius: 0,
-                                            size: const Size(40, 40),
+                                            size: const Size(20, 20),
                                             fitBoundsOptions: const FitBoundsOptions(
                                               padding: EdgeInsets.all(50),
                                             ),
@@ -186,7 +201,7 @@ class _mapUIState extends State<mapUI> {
                                       ],
                                     );
                                   } else {
-                                    return LoadingIndicator(size: 40, borderWidth: 2);
+                                    return const LoadingIndicator(size: 40, borderWidth: 2);
                                   }
                                 },
                               )

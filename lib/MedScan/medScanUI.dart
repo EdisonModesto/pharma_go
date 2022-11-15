@@ -67,7 +67,7 @@ class _medScanUIState extends State<medScanUI> {
         String? matchedKey = StringSimilarity.findBestMatch(parsedText[j].toLowerCase(), KeyList).bestMatch.target;
         print("BEST MATCH IS $rating");
 
-        if(rating! <= 3.0 && rating! != 0){
+        if(rating! >= 0.3 && rating! != 0){
           setState(() {
             medName = body[matchedKey][0]["generic_name"];
             dosage =  body[matchedKey][1]["dosage"];

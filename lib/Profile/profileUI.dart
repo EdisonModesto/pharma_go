@@ -137,7 +137,7 @@ class _profileUIState extends State<profileUI> {
                               ),
                             ],
                           ),
-                          Container(
+                          SizedBox(
                             height: 100,
                             child: Center(
                               child: Text(
@@ -228,6 +228,44 @@ class _profileUIState extends State<profileUI> {
                                   ),
                                   child: Text(
                                     "Upload",
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 15),
+                            height: 75,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(15),
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                color: Color(0xffD9DEDC)
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "About the app",
+                                  style: TextStyle(
+                                      fontSize: 14
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: (){
+                                    FirebaseAuth.instance.signOut();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xff219C9C),
+                                    elevation: 0,
+                                    fixedSize: Size(100, 10),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(20))
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Logout",
                                   ),
                                 )
                               ],
