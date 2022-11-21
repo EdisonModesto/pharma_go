@@ -9,6 +9,7 @@ import 'package:pharma_go/authentication/registerProvider.dart';
 import 'package:pharma_go/speechRecognition/speechFAB.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../authentication/loginUI.dart';
 import '../my_flutter_app_icons.dart';
@@ -140,11 +141,20 @@ class _profileUIState extends State<profileUI> {
                           SizedBox(
                             height: 100,
                             child: Center(
-                              child: Text(
-                                "${context.watch<registerProvider>().Name}",
-                                style: const TextStyle(
-                                  fontSize: 18
-                                ),
+                              child: Row(
+                                children: [
+                                  QrImage(
+                                    data: "Edison Modesto:09279872019:32:53:43:Item1:Item2:Item3",
+                                    version: QrVersions.auto,
+                                    size: 200.0,
+                                  ),
+                                  Text(
+                                    context.watch<registerProvider>().Name,
+                                    style: const TextStyle(
+                                        fontSize: 18
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -254,7 +264,7 @@ class _profileUIState extends State<profileUI> {
                                 ),
                                 ElevatedButton(
                                   onPressed: (){
-                                    FirebaseAuth.instance.signOut();
+                                    //FirebaseAuth.instance.signOut();
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xff219C9C),
@@ -265,7 +275,7 @@ class _profileUIState extends State<profileUI> {
                                     ),
                                   ),
                                   child: Text(
-                                    "Logout",
+                                    "About",
                                   ),
                                 )
                               ],
