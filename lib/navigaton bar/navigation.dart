@@ -5,6 +5,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:pharma_go/AdminPanel/accountsAdminUI.dart';
 import 'package:pharma_go/AdminPanel/chatAdminUI.dart';
 import 'package:pharma_go/AdminPanel/orderAdminUI.dart';
+import 'package:pharma_go/AdminPanel/qrUI.dart';
 import 'package:pharma_go/Home/homeUI.dart';
 import 'package:pharma_go/Map/MapUI.dart';
 import 'package:pharma_go/MedScan/medScanUI.dart';
@@ -54,11 +55,10 @@ class _navigationBarState extends State<navigationBar> {
     return [
       const orderAdminUI(),
       const chatAdminUI(),
+      const qrUI(),
       const accountAdminUI(),
     ];
   }
-
-
 
   List<PersistentBottomNavBarItem> _userNavBarsItems() {
     return [
@@ -107,6 +107,13 @@ class _navigationBarState extends State<navigationBar> {
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.message_outlined),
         title: ("Chat"),
+        activeColorPrimary: const Color(0xff219C9C),
+        inactiveColorPrimary: const Color(0xff7D7474),
+      ),
+
+      PersistentBottomNavBarItem(
+        icon: const Icon(Icons.qr_code),
+        title: ("Scan QR"),
         activeColorPrimary: const Color(0xff219C9C),
         inactiveColorPrimary: const Color(0xff7D7474),
       ),

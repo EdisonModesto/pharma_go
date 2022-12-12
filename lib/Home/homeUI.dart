@@ -5,6 +5,8 @@ import 'package:flutterfire_ui/auth.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:pharma_go/Home/remindersDialog.dart';
+import 'package:intl/intl.dart';
+
 import 'package:pharma_go/Home/viewDialog.dart';
 import 'package:pharma_go/authentication/loginUI.dart';
 import 'package:pharma_go/authentication/registerProvider.dart';
@@ -235,7 +237,10 @@ class _homeUIState extends State<homeUI> {
                                                 color: Color(0xff219C9C),
                                               ),
                                               child: Center(
-                                                child: Text(
+                                                child: DateFormat('HH:mm').parse(snapshot.data?.docs[index]['Time']).isBefore(DateFormat('HH:mm').parse("${TimeOfDay.now().hour}:${TimeOfDay.now().minute}") )?
+
+                                                    Icon(Icons.warning_amber) :
+                                                Text(
                                                   snapshot.data?.docs[index]['Time'],
                                                   textAlign: TextAlign.center,
                                                   style: const TextStyle(

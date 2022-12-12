@@ -144,7 +144,7 @@ class _profileUIState extends State<profileUI> {
                               child: Row(
                                 children: [
                                   QrImage(
-                                    data: "Edison Modesto:09279872019:32:53:43:Item1:Item2:Item3",
+                                    data: "${context.watch<registerProvider>().Name}:${context.watch<registerProvider>().Number}:${context.watch<registerProvider>().Age}:${context.watch<registerProvider>().Height}:${context.watch<registerProvider>().Weight}:Item1:Item2:Item3",
                                     version: QrVersions.auto,
                                     size: 200.0,
                                   ),
@@ -229,14 +229,14 @@ class _profileUIState extends State<profileUI> {
                                     imgFromGallery();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xff219C9C),
+                                    backgroundColor: const Color(0xff219C9C),
                                     elevation: 0,
-                                    fixedSize: Size(100, 10),
-                                    shape: RoundedRectangleBorder(
+                                    fixedSize: const Size(100, 10),
+                                    shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(Radius.circular(20))
                                     ),
                                   ),
-                                  child: Text(
+                                  child: const Text(
                                     "Upload",
                                   ),
                                 )
@@ -264,17 +264,49 @@ class _profileUIState extends State<profileUI> {
                                 ),
                                 ElevatedButton(
                                   onPressed: (){
-                                    //FirebaseAuth.instance.signOut();
+                                    showDialog(context: context, builder: (context){
+                                      return Center(
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: SizedBox(
+                                            width: MediaQuery.of(context).size.width * 0.8,
+                                            height: 400,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(25.0),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Text(
+                                                    "About the app",
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 15,),
+                                                  const Text(
+                                                    "Pharmago is an app that aims to provide users the benefits of buying medicines with ease, the app is equipped with a powerful Medicine Scanner and Virtual Assistant that can helo users use the app with ease. The app also provides users the ability to see all nearby pharmacies for them. Users can also set reminders inside the app so that they wont miss any medicines.",
+                                                    textAlign: TextAlign.justify,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    });
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xff219C9C),
+                                    backgroundColor: const Color(0xff219C9C),
                                     elevation: 0,
-                                    fixedSize: Size(100, 10),
-                                    shape: RoundedRectangleBorder(
+                                    fixedSize: const Size(100, 10),
+                                    shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(Radius.circular(20))
                                     ),
                                   ),
-                                  child: Text(
+                                  child: const Text(
                                     "About",
                                   ),
                                 )
@@ -305,14 +337,14 @@ class _profileUIState extends State<profileUI> {
                                     FirebaseAuth.instance.signOut();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xff219C9C),
+                                    backgroundColor: const Color(0xff219C9C),
                                     elevation: 0,
-                                    fixedSize: Size(100, 10),
-                                    shape: RoundedRectangleBorder(
+                                    fixedSize: const Size(100, 10),
+                                    shape: const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(Radius.circular(20))
                                     ),
                                   ),
-                                  child: Text(
+                                  child: const Text(
                                     "Logout",
                                   ),
                                 )

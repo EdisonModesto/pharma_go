@@ -23,6 +23,10 @@ class mapUI extends StatefulWidget {
 
 class _mapUIState extends State<mapUI> {
   List<Marker> markers = [];
+  List directories = [];
+  var centerLat = 15.0284;
+  var centerLang = 120.6937;
+  final mapController = MapController();
 
   getPharmacies(String searchKey)async{
 
@@ -35,6 +39,7 @@ class _mapUIState extends State<mapUI> {
     );
 
       searchResult.forEach((element) {
+        directories.add(element);
         if(mounted){
           setState(() {
             markers.add(
@@ -59,7 +64,7 @@ class _mapUIState extends State<mapUI> {
   @override
   void initState() {
     super.initState();
-
+    sendRequests();
   }
 
   @override
@@ -147,67 +152,82 @@ class _mapUIState extends State<mapUI> {
                                   border: Border.all(color: Colors.black, width: 6,
                                   )
                               ),
-                              child: FutureBuilder(
-                                future: sendRequests(),
-                                builder: (context, snapshot){
-                                  if(snapshot.hasData){
-                                    return FlutterMap(
-                                      options: MapOptions(
-                                        center: latLng.LatLng(15.0284, 120.6937),
-                                        zoom: 11,
-                                      ),
-                                      nonRotatedChildren: [
+                              child: FlutterMap(
+                                mapController: mapController,
+                                options: MapOptions(
+                                  center: latLng.LatLng(centerLat, centerLang),
+                                  zoom: 11,
+                                ),
+                                nonRotatedChildren: [
 
-                                      ],
-                                      children: [
-                                        TileLayer(
-                                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                          userAgentPackageName: 'com.example.app',
+                                ],
+                                children: [
+                                  TileLayer(
+                                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    userAgentPackageName: 'com.example.app',
+                                  ),
+                                  CurrentLocationLayer(
+                                    centerOnLocationUpdate: CenterOnLocationUpdate.once,
+                                    turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
+                                    style: const LocationMarkerStyle(
+                                      marker: DefaultLocationMarker(
+                                        child: Icon(
+                                          Icons.navigation,
+                                          color: Colors.white,
                                         ),
-                                        CurrentLocationLayer(
-                                          centerOnLocationUpdate: CenterOnLocationUpdate.always,
-                                          turnOnHeadingUpdate: TurnOnHeadingUpdate.never,
-                                          style: const LocationMarkerStyle(
-                                            marker: DefaultLocationMarker(
-                                              child: Icon(
-                                                Icons.navigation,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            markerSize: Size(40, 40),
-                                            markerDirection: MarkerDirection.heading,
-                                          ),
-                                        ),
-                                        markers.isNotEmpty ? MarkerClusterLayerWidget(
-                                          options: MarkerClusterLayerOptions(
-                                            maxClusterRadius: 0,
-                                            size: const Size(20, 20),
-                                            fitBoundsOptions: const FitBoundsOptions(
-                                              padding: EdgeInsets.all(50),
-                                            ),
-                                            markers: snapshot.data!,
-                                            polygonOptions: const PolygonOptions(
-                                                borderColor: Colors.blueAccent,
-                                                color: Colors.black12,
-                                                borderStrokeWidth: 3),
-                                            builder: (context, markers) {
-                                              return FloatingActionButton(
-                                                onPressed: null,
-                                                child: Text(markers.length.toString()),
-                                              );
-                                            },
-                                          ),
-                                        ) : Container()
-                                      ],
-                                    );
-                                  } else {
-                                    return const LoadingIndicator(size: 40, borderWidth: 2);
-                                  }
-                                },
+                                      ),
+                                      markerSize: Size(40, 40),
+                                      markerDirection: MarkerDirection.heading,
+                                    ),
+                                  ),
+                                  markers.isNotEmpty ? MarkerClusterLayerWidget(
+                                    options: MarkerClusterLayerOptions(
+                                      maxClusterRadius: 0,
+                                      size: const Size(20, 20),
+                                      fitBoundsOptions: const FitBoundsOptions(
+                                        padding: EdgeInsets.all(50),
+                                      ),
+                                      markers: markers,
+                                      polygonOptions: const PolygonOptions(
+                                          borderColor: Colors.blueAccent,
+                                          color: Colors.black12,
+                                          borderStrokeWidth: 3),
+                                      builder: (context, markers) {
+                                        return FloatingActionButton(
+                                          onPressed: null,
+                                          child: Text(markers.length.toString()),
+                                        );
+                                      },
+                                    ),
+                                  ) : Container()
+                                ],
                               )
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 150,
+                          child: ListView.builder(
+                            itemCount: directories.length,
+                            itemBuilder: (context, index){
+                              return ListTile(
+                                onTap: (){
+                                  setState(() {
+                                    mapController.move(latLng.LatLng(directories[index].lat, directories[index].lon), 15);
+                                  });
+                                },
+                                leading: Icon(
+                                  Icons.place_outlined
+                                ),
+                                title: Text(
+                                  directories[index].displayName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            },
+                          ),
+                        )
                       ]
                   ),
                 ),

@@ -630,6 +630,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  mobile_scanner:
+    dependency: "direct main"
+    description:
+      name: mobile_scanner
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   modal_bottom_sheet:
     dependency: "direct main"
     description:
@@ -763,6 +770,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.1"
+  scan:
+    dependency: "direct main"
+    description:
+      name: scan
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.6.0"
   sign_in_with_apple:
     dependency: transitive
     description:
