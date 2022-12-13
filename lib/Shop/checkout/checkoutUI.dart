@@ -71,7 +71,7 @@ class _checkoutUIState extends State<checkoutUI> {
     var isVerified = snap["isVerified"];
 
     for(int i = 0; i < widget.names.length; i++){
-      total += int.parse(widget.prices[i]);
+      total += double.parse(widget.prices[i]);
     }
     if(isVerified){
       total = total - (0.20 * total);
