@@ -114,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
       print(data);
       context.read<registerProvider>().addDetails(
           data!["Mobile"], data["Name"], data["Address"], data["Age"],
-          data["Weight"], data["Height"]);
+          data["Weight"], data["Height"], data["FBM"]);
     }
   }
 

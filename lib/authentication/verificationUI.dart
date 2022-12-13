@@ -31,6 +31,7 @@ class _verifyUIState extends State<verifyUI> {
       "Weight": context.read<registerProvider>().Weight,
       "isAdmin": false,
       "isVerified": false,
+      "FBM": [],
     });
 
     DateTime startDate = new DateTime.now().toLocal();

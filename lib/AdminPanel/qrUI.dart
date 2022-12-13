@@ -21,6 +21,9 @@ class _qrUIState extends State<qrUI> {
   var name = "";
   var mobile = "";
   var age = "";
+  var item1 = "";
+  var item2 = "";
+  var item3 = "";
 
   void parseQR(String data){
     var splitData = data.split(":");
@@ -30,6 +33,9 @@ class _qrUIState extends State<qrUI> {
         name = splitData[0];
         mobile = splitData[1];
         age = splitData[2];
+        item1 = splitData[5];
+        item2 = splitData[6];
+        item3 = splitData[7];
       });
       print(name);
       print(mobile);
@@ -129,8 +135,8 @@ class _qrUIState extends State<qrUI> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
-                                    height: 270,
-                                    width: 270,
+                                    height: 250,
+                                    width: 250,
                                     decoration: BoxDecoration(
                                         borderRadius: const BorderRadius.all(Radius.circular(12)),
                                         border: Border.all(color: Colors.black, width: 8,
@@ -154,7 +160,7 @@ class _qrUIState extends State<qrUI> {
                             padding: const EdgeInsets.all(8.0),
                             child: Center(
                               child: Container(
-                                height: 150,
+                                height: 175,
                                 width: MediaQuery.of(context).size.width,
                                 padding: EdgeInsets.all(15),
                                 decoration: const BoxDecoration(
@@ -177,6 +183,9 @@ class _qrUIState extends State<qrUI> {
                                         ),
                                         Text(
                                           "Age: $age",
+                                        ),
+                                        Text(
+                                          "$item1\n$item2\n$item3",
                                         ),
                                       ],
                                     ),

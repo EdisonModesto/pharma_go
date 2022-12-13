@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +9,9 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 import '../my_flutter_app_icons.dart';
+import 'package:intl/intl.dart';
+
+import '../notification/Notify.dart';
 
 class speechUI extends StatefulWidget {
   const speechUI({Key? key}) : super(key: key);
@@ -59,9 +63,28 @@ class _speechUIState extends State<speechUI> {
     } else if(_lastWords.contains("how much is this certain medicine")){
       tts.speak("Opening Medicine Scanner");
       Navigator.push(context, MaterialPageRoute(builder: (context)=>medScanUI()));
+    } else if(_lastWords.contains("remind me at")){
+      var time = _lastWords.replaceAll("remind me at ", "").replaceAll(".", "").toUpperCase();
+      print(time);
+      final dateFormat = DateFormat('h:mm a');
+      var parsedTime = dateFormat.parse(time);
+      print(parsedTime);
+      var TOD = TimeOfDay(hour: parsedTime.hour, minute: parsedTime.minute);
+      print(FirebaseAuth.instance.currentUser?.uid);
+      var collection = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser?.uid).collection("Reminders").doc();
+      collection.set({
+        "Title": "Reminder",
+        "Time": "${TOD.hour}:${TOD.minute.toString().length == 1 ? ("0" + TOD.minute.toString()) : TOD.minute }",
+        "parsedTime": int.parse("${TOD.hour}${TOD.minute}")
+      }).whenComplete((){
+        Notify.instantNotify("Reminder", "New Notification", TOD);
+        Navigator.pop(context);
+      });
     }
 
   }
+
+
 
   @override
   Widget build(BuildContext context) {

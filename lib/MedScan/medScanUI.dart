@@ -33,7 +33,7 @@ class _medScanUIState extends State<medScanUI> {
   late var body;
   late Map responseMap;
   late List<String> KeyList = [];
-  var medName = "", dosage = "", srp = "";
+  List<String> medName = [], brandName = [], dosage = [], srp = [];
   var flash = false;
 
 
@@ -67,14 +67,32 @@ class _medScanUIState extends State<medScanUI> {
         String? matchedKey = StringSimilarity.findBestMatch(parsedText[j].toLowerCase(), KeyList).bestMatch.target;
         print("BEST MATCH IS $rating");
 
-        if(rating! >= 0.3 && rating! != 0){
+        if(rating! >= 0.3 && rating != 0){
+          print("detextd");
+          /*medName.add(body[matchedKey][0]["generic_name"]);
+          brandName.add(body[matchedKey][1]["brand_name"]);
+          dosage.add(body[matchedKey][2]["dosage"]);
+          srp.add(body[matchedKey][3]["srp"]);*/
+          print("added");
+          for(int k = 0; k < body.length; k++){
+            if(body[matchedKey][0]["generic_name"] == body[KeyList[k]][0]["generic_name"]){
+              medName.add(body[KeyList[k]][0]["generic_name"]);
+              brandName.add(body[KeyList[k]][1]["brand_name"]);
+              dosage.add(body[KeyList[k]][2]["dosage"]);
+              srp.add(body[KeyList[k]][3]["srp"]);
+              print("added again");
+            }
+          }
           setState(() {
-            medName = body[matchedKey][0]["generic_name"];
-            dosage =  body[matchedKey][1]["dosage"];
-            srp =  body[matchedKey][2]["srp"];
+            print(medName);
+            print(brandName);
+            print(dosage);
           });
           break;
         }
+      }
+      if(medName.isNotEmpty){
+        break;
       }
     }
   }
@@ -96,7 +114,7 @@ class _medScanUIState extends State<medScanUI> {
       if (!mounted) {
         return;
       }
-      _initializeCamera();
+      //_initializeCamera();
       setState(() {});
     }).catchError((Object e) {
       if (e is CameraException) {
@@ -261,42 +279,61 @@ class _medScanUIState extends State<medScanUI> {
                             child: Container(
                               height: 150,
                               width: MediaQuery.of(context).size.width,
-                              padding: EdgeInsets.all(15),
+                              padding: EdgeInsets.only(bottom: 0, top: 10, left: 10, right: 10),
                               decoration: const BoxDecoration(
                                 color: Color(0xffD9DEDC),
                                 borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
                               ),
-                              child: Center(
-                                child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Medicine Name: $medName"
-                                        ),
-                                        Text(
-                                            "Dosage: $dosage"
-                                        ),
-                                        Text(
-                                            "SRP: $srp"
-                                        ),
-                                        Center(
-                                          child: ElevatedButton(
-                                            onPressed: (){
-                                              _initializeCamera();
-                                              setState(() {});
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Color(0xff219C9C)
-                                            ),
-                                            child: Text(
-                                              "Capture"
-                                            ),
+                              child: Column(
+                                children: [
+
+                                  Expanded(
+                                    child: PageView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: List.generate(medName.length, (index){
+                                        return Container(
+                                          height: 200,
+                                          width: MediaQuery.of(context).size.width,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  "Medicine Name: ${medName[index]}"
+                                              ),
+                                              Text(
+                                                  "Medicine Name: ${brandName[index]}"
+                                              ),
+                                              Text(
+                                                  "Dosage: ${dosage[index]}"
+                                              ),
+                                              Text(
+                                                  "SRP: ${srp[index]}"
+                                              ),
+
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                        );
+                                      }),
                                     ),
-                              ),
+                                  ),
+                                  Center(
+                                    child: ElevatedButton(
+                                      onPressed: (){
+                                        _initializeCamera();
+                                        setState(() {});
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xff219C9C)
+                                      ),
+                                      child: Text(
+                                          "Capture"
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              )
+
+
                             ),
                           ),
                         )

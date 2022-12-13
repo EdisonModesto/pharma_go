@@ -34,7 +34,7 @@ class _registerUIState extends State<registerUI> {
   }
 
   void setProvider(){
-    context.read<registerProvider>().addDetails(_numCtrl.text, _nameCtrl.text, _addressCtrl.text, _age.text, _height.text, _weight.text);
+    context.read<registerProvider>().addDetails(_numCtrl.text, _nameCtrl.text, _addressCtrl.text, _age.text, _height.text, _weight.text, []);
   }
 
   void sendOTP()async{

@@ -144,7 +144,7 @@ class _profileUIState extends State<profileUI> {
                               child: Row(
                                 children: [
                                   QrImage(
-                                    data: "${context.watch<registerProvider>().Name}:${context.watch<registerProvider>().Number}:${context.watch<registerProvider>().Age}:${context.watch<registerProvider>().Height}:${context.watch<registerProvider>().Weight}:Item1:Item2:Item3",
+                                    data: "${context.watch<registerProvider>().Name}:${context.watch<registerProvider>().Number}:${context.watch<registerProvider>().Age}:${context.watch<registerProvider>().Height}:${context.watch<registerProvider>().Weight}:${context.watch<registerProvider>().FBM.isNotEmpty ? context.watch<registerProvider>().FBM.last : ""}:${context.watch<registerProvider>().FBM.isNotEmpty ? context.watch<registerProvider>().FBM[context.watch<registerProvider>().FBM.length -2] : ""}:${context.watch<registerProvider>().FBM.isNotEmpty ? context.watch<registerProvider>().FBM[context.watch<registerProvider>().FBM.length -3] : ""}",
                                     version: QrVersions.auto,
                                     size: 200.0,
                                   ),

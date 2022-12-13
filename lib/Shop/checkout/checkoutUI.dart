@@ -1,4 +1,4 @@
-import 'dart:io';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,6 +44,9 @@ class _checkoutUIState extends State<checkoutUI> {
           stats = 2;
           ref = querySnapshot.get("RefID").toString();
         });
+        FirebaseFirestore.instance.collection("Users").doc(FirebaseAuth.instance.currentUser!.uid).update({
+          "FBM": FieldValue.arrayUnion(widget.names)
+        });
         showDialog(context: context, builder: (context){
           return const dialogUI(title: "Payment Confirmed!", body: "Your order is now confirmed and is ready for pickup. Please take a screenshot of the receipt and show it to the cashier",);
         });
@@ -65,17 +68,20 @@ class _checkoutUIState extends State<checkoutUI> {
     });
   }
 
-  calcPrice()async{
+  Future<double> calcPrice()async{
     var doc = FirebaseFirestore.instance.collection("Users").doc(FirebaseAuth.instance.currentUser!.uid);
     var snap = await doc.get();
     var isVerified = snap["isVerified"];
-
+    total = 0;
     for(int i = 0; i < widget.names.length; i++){
       total += double.parse(widget.prices[i]);
     }
+
     if(isVerified){
       total = total - (0.20 * total);
     }
+
+    return total;
   }
 
   @override
@@ -83,7 +89,6 @@ class _checkoutUIState extends State<checkoutUI> {
     super.initState();
     listenStatus();
     getGcash();
-    calcPrice();
     //listenStatus();
   }
 
@@ -303,12 +308,20 @@ class _checkoutUIState extends State<checkoutUI> {
                                     const Divider(
                                       thickness: 1, color: Colors.grey,
                                     ),
-                                    Text(
-                                      "Total: $total",
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                      ),
+                                    FutureBuilder(
+                                      future: calcPrice(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return Text(
+                                            "Total: ${snapshot.data}",
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold
+                                            ),
+                                          );
+                                        }
+                                        return Center(child: CircularProgressIndicator());
+                                      }
                                     ),
                                   ],
                                 ),
