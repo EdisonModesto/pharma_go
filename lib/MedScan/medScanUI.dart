@@ -345,7 +345,6 @@ class _medScanUIState extends State<medScanUI> {
           ),
         ),
       ),
-      floatingActionButton: const speechFAB()
     );
   }
 }

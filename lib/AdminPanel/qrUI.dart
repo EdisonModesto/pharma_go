@@ -202,7 +202,6 @@ class _qrUIState extends State<qrUI> {
             ),
           ),
         ),
-        floatingActionButton: const speechFAB()
     );
   }
 }

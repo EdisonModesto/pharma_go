@@ -182,7 +182,7 @@ class _expandItemState extends State<expandItem> {
                           ),
                           Text(
                             overflow: TextOverflow.ellipsis,
-                            "\nQuantity: ${widget.stocks}",
+                            "\Stocks: ${widget.stocks}",
                             style: const TextStyle(
                               fontSize: 12,
                             ),

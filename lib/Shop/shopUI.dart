@@ -287,7 +287,6 @@ class _shopUIState extends State<shopUI> {
           ),
         ),
       ),
-      floatingActionButton: const speechFAB()
     );
   }
 }

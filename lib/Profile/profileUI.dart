@@ -360,7 +360,6 @@ class _profileUIState extends State<profileUI> {
           ),
         ),
       ),
-      floatingActionButton: const speechFAB()
     );
   }
 }

@@ -274,7 +274,6 @@ class _homeUIState extends State<homeUI> {
           ),
         ),
       ),
-      floatingActionButton: const speechFAB()
     );
   }
 }

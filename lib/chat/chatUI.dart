@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
@@ -33,6 +34,7 @@ class _chatUIState extends State<chatUI> {
   CollectionReference messages = FirebaseFirestore.instance.collection('Channels');
 
   TextEditingController msgCtrl = TextEditingController();
+  ScrollController _scrollController = ScrollController();
 
 
 
@@ -66,6 +68,52 @@ class _chatUIState extends State<chatUI> {
     } catch (e) {
       print('error occured');
     }
+  }
+
+  Future<String> imgFromGalleryMsg() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+
+      if (pickedFile != null) {
+        _photo = File(pickedFile.path);
+        return await uploadFileMsg();
+      } else {
+        print('No image selected.');
+      }
+
+    return "";
+  }
+
+  Future<String> imgFromGalleryMsg2() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+
+    if (pickedFile != null) {
+      _photo = File(pickedFile.path);
+      return await uploadFileMsg();
+    } else {
+      print('No image selected.');
+    }
+
+    return "";
+  }
+
+
+  Future<String> uploadFileMsg() async {
+    if (_photo == null) return "";
+    final fileName = path.basename(_photo!.path);
+    final destination = 'MSG/';
+
+    try {
+      final ref = FirebaseStorage.instance.ref(destination).child('${fileName}/');
+      await ref.putFile(_photo!);
+      var urlImg = await ref.getDownloadURL();
+      print(urlImg);
+      return urlImg;
+    } catch (e) {
+      print('error occured');
+    }
+    return "";
   }
 
   late var ref = FirebaseStorage.instance.ref("userReseta/${widget.channelID}").child('userReseta/');
@@ -106,12 +154,35 @@ class _chatUIState extends State<chatUI> {
     }
   }
 
+  void jump(){
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300), curve: Curves.elasticOut);
+    } else {
+      Timer(Duration(milliseconds: 400), () => jump());
+    }
+  }
+  
   @override
   void initState() {
     super.initState();
     messages = messages.doc(widget.channelID).collection("Messages");
     initCloud();
     checkAutoMsg();
+
+
+
+
+  }
+
+  void viewImg(url1){
+    showMaterialModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        child: Image.network(url1),
+      ),
+    );
   }
 
   @override
@@ -202,14 +273,48 @@ class _chatUIState extends State<chatUI> {
                               }
 
                               return ListView.builder(
+                                controller: _scrollController,
                                 itemCount: snapshot.data!.docs.length,
+                                shrinkWrap: true ,
                                 itemBuilder: (context,index){
+
+                                  var RawMessage = snapshot.data?.docs[index]["message"];
+                                  var parsedMessage = RawMessage.split("|");
+                                  print(parsedMessage);
+                                  WidgetsBinding.instance.addPostFrameCallback((_){
+                                    if(_scrollController.hasClients){
+                                      jump();
+                                    }
+                                  });
+
+
                                   return snapshot.data?.docs[index]["user"] == FirebaseAuth.instance.currentUser?.uid ?
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Flexible(
-                                        child: Container(
+                                        child: parsedMessage[0] == "image" ?
+                                        Container(
+                                          height: 250,
+                                          width: 175,
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xff219C9C),
+                                              borderRadius: BorderRadius.all(Radius.circular(15))
+                                          ),
+                                          margin: const EdgeInsets.only(bottom: 10, left: 30),
+                                          padding: const EdgeInsets.only(left: 15, right: 15,top: 10, bottom: 10),
+                                          child: InkWell(
+                                            onTap: (){
+                                              viewImg(parsedMessage[1]);
+                                            },
+                                            child: Image.network(
+                                              parsedMessage[1],
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        )
+                                        :
+                                        Container(
                                           decoration: const BoxDecoration(
                                               color: Color(0xff219C9C),
                                               borderRadius: BorderRadius.all(Radius.circular(15))
@@ -217,7 +322,7 @@ class _chatUIState extends State<chatUI> {
                                           margin: const EdgeInsets.only(bottom: 10, left: 30),
                                           padding: const EdgeInsets.only(left: 15, right: 15,top: 10, bottom: 10),
                                           child: Text(
-                                            snapshot.data?.docs[index]["message"],
+                                            parsedMessage[1],
                                             softWrap: true,
                                           ),
                                         ),
@@ -229,7 +334,27 @@ class _chatUIState extends State<chatUI> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Flexible(
-                                        child: Container(
+                                        child: parsedMessage[0] == "image" ?
+                                        Container(
+                                          height: 250,
+                                          width: 175,
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xffD9DEDC),
+                                              borderRadius: BorderRadius.all(Radius.circular(15))
+                                          ),
+                                          margin: const EdgeInsets.only(bottom: 10, right: 30),
+                                          padding: const EdgeInsets.only(left: 15, right: 15,top: 10, bottom: 10),
+                                          child: InkWell(
+                                            onTap: (){
+                                              viewImg(parsedMessage[1]);
+                                            },
+                                            child: Image.network(
+                                              parsedMessage[1],
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ) :
+                                        Container(
                                           decoration: const BoxDecoration(
                                               color: Color(0xffD9DEDC),
                                               borderRadius: BorderRadius.all(Radius.circular(15))
@@ -237,13 +362,15 @@ class _chatUIState extends State<chatUI> {
                                           margin: const EdgeInsets.only(bottom: 10, right: 30),
                                           padding: const EdgeInsets.only(left: 15, right: 15,top: 10, bottom: 10),
                                           child: Text(
-                                            snapshot.data?.docs[index]["message"],
+                                            parsedMessage[1],
                                             softWrap: true,
                                           ),
                                         ),
-                                      )
+                                      ),
                                     ],
                                   );
+
+
                                 },
                               );
                             }),
@@ -271,17 +398,78 @@ class _chatUIState extends State<chatUI> {
                           ),
                           IconButton(
                             onPressed: () async {
+                              try{
+                                DateTime startDate = new DateTime.now().toLocal();
+                                int offset = await NTP.getNtpOffset(localTime: startDate);
+                                var img = await imgFromGalleryMsg2();
+                                if(img != "" && img != null){
+                                  messages.add({
+                                    "message": "image|${img}",
+                                    "user": FirebaseAuth.instance.currentUser?.uid,
+                                    "time": startDate.add(Duration(milliseconds: offset))
+                                  });
+                                  var snap = FirebaseFirestore.instance.collection("Channels").doc(widget.channelID).update({
+                                    "lastUpdate": startDate.add(Duration(milliseconds: offset)),
+                                  });
+                                  msgCtrl.text = "";
+                                  await Future.delayed(Duration(milliseconds: 500));
+                                  _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                                  await Future.delayed(Duration(milliseconds: 500));
+                                  _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                                }
+
+                              }catch(e){
+
+                              }
+                            },
+                            icon: const Icon(Icons.photo),
+                          ),
+                          IconButton(
+                            onPressed: () async {
                               DateTime startDate = new DateTime.now().toLocal();
                               int offset = await NTP.getNtpOffset(localTime: startDate);
-                              messages.add({
-                                "message": msgCtrl.text,
-                                "user": FirebaseAuth.instance.currentUser?.uid,
-                                "time": startDate.add(Duration(milliseconds: offset))
-                              });
-                              var snap = FirebaseFirestore.instance.collection("Channels").doc(widget.channelID).update({
-                                "lastUpdate": startDate.add(Duration(milliseconds: offset)),
-                              });
-                              msgCtrl.text = "";
+                              var img = await imgFromGalleryMsg();
+                              if(img != "" && img != null){
+                                messages.add({
+                                  "message": "image|${img}",
+                                  "user": FirebaseAuth.instance.currentUser?.uid,
+                                  "time": startDate.add(Duration(milliseconds: offset))
+                                });
+                                var snap = FirebaseFirestore.instance.collection("Channels").doc(widget.channelID).update({
+                                  "lastUpdate": startDate.add(Duration(milliseconds: offset)),
+                                });
+                                msgCtrl.text = "";
+                                await Future.delayed(Duration(milliseconds: 500));
+                                _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                                await Future.delayed(Duration(milliseconds: 500));
+                                _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                              }
+
+                            },
+                            icon: const Icon(Icons.camera_alt),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              try{
+                                DateTime startDate = new DateTime.now().toLocal();
+                                int offset = await NTP.getNtpOffset(localTime: startDate);
+                                messages.add({
+                                  "message": "msg|${msgCtrl.text}",
+                                  "user": FirebaseAuth.instance.currentUser?.uid,
+                                  "time": startDate.add(Duration(milliseconds: offset))
+                                });
+                                var snap = FirebaseFirestore.instance.collection("Channels").doc(widget.channelID).update({
+                                  "lastUpdate": startDate.add(Duration(milliseconds: offset)),
+                                });
+                                msgCtrl.text = "";
+                                await Future.delayed(Duration(milliseconds: 500));
+                                _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                                await Future.delayed(Duration(milliseconds: 500));
+                                _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                              }catch(e){
+
+                              }
+                             
                             },
                             icon: const Icon(Icons.send),
                           )

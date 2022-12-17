@@ -47,7 +47,14 @@ class _mapUIState extends State<mapUI> {
                   point: latLng.LatLng(element.lat, element.lon),
                   width: 300,
                   height: 300,
-                  builder: (context) => const Icon(MyFlutterApp.location, color: Color(0xff219C9C),),
+                  builder: (context){
+                    return Column(
+                      children: [
+                        const Icon(MyFlutterApp.location, color: Color(0xff219C9C),),
+                        Text("${element.displayName.substring(0, 10)}...", style: const TextStyle(color: Color(0xff219C9C), fontSize: 12), )
+                      ],
+                    );
+                  },
                 )
             );
           });
@@ -132,14 +139,119 @@ class _mapUIState extends State<mapUI> {
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               "Nearby\nPharmacies",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                            IconButton(
+                              onPressed: (){
+                                var searchList = [];
+                                searchList.addAll(directories);
+                                showMaterialModalBottomSheet(
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(20),
+                                          topLeft: Radius.circular(20)
+                                      )
+                                  ),
+                                  context: context,
+                                  builder: (context){
+                                    return Container(
+                                      height: 500,
+                                      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 50,
+                                            child: TextField(
+                                                style: TextStyle(
+                                                    fontSize: 14
+                                                ),
+                                                decoration: InputDecoration(
+                                                  label: Text("Search"),
+                                                  errorStyle: TextStyle(height: 0),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(
+                                                      Radius.circular(8),
+                                                    ),
+                                                    borderSide: BorderSide(
+                                                      color: Color(0xff219C9C),
+                                                      width: 2.0,
+                                                    ),
+                                                  ),
+
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(
+                                                      Radius.circular(8),
+                                                    ),
+                                                    borderSide: BorderSide(
+                                                      color: Colors.red,
+                                                      width: 6.0,
+                                                    ),
+                                                  ),
+
+                                                ),
+                                              onChanged: (val)async{
+                                                  if(val.isEmpty){
+                                                    searchList.clear();
+                                                    searchList.addAll(directories);
+                                                  } else {
+                                                    searchList.clear();
+                                                    for(int i = 0; i < directories.length; i++){
+                                                      if(directories[i].displayName.toLowerCase().contains(val.toLowerCase())){
+                                                        searchList.add(directories[i]);
+                                                      }
+                                                    }
+                                                  }
+                                                  setState(() {
+
+                                                  });
+                                              },
+                                              onSubmitted: (val)async{
+                                                if(val.isEmpty){
+                                                  searchList = directories;
+                                                } else {
+                                                  searchList.clear();
+                                                  for(int i = 0; i < directories.length; i++){
+                                                    if(directories[i].displayName.toLowerCase().contains(val.toLowerCase())){
+                                                      searchList.add(directories[i]);
+                                                    }
+                                                  }
+                                                }
+                                                setState(() {
+
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: ListView.builder(
+                                              itemCount: searchList.length,
+                                              itemBuilder: (context, index){
+                                                return ListTile(
+                                                  title: Text(searchList[index].displayName),
+                                                  subtitle: Text(searchList[index].address.toString()),
+                                                  onTap: (){
+                                                    mapController.move(latLng.LatLng(searchList[index].lat, searchList[index].lon), 15);
+                                                    Navigator.pop(context);
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.search,
+                              ),)
                           ],
                         ),
                         Expanded(
@@ -216,7 +328,7 @@ class _mapUIState extends State<mapUI> {
                                     mapController.move(latLng.LatLng(directories[index].lat, directories[index].lon), 15);
                                   });
                                 },
-                                leading: Icon(
+                                leading: const Icon(
                                   Icons.place_outlined
                                 ),
                                 title: Text(
@@ -236,7 +348,6 @@ class _mapUIState extends State<mapUI> {
           ),
         ),
       ),
-      floatingActionButton: const speechFAB()
     );
   }
 }
